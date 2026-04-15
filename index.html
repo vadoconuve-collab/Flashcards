@@ -1,0 +1,145 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">
+<html>
+<head>
+  <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+  <meta http-equiv="Content-Style-Type" content="text/css">
+  <title></title>
+  <meta name="Generator" content="Cocoa HTML Writer">
+  <meta name="CocoaVersion" content="2685.5">
+  <style type="text/css">
+    p.p1 {margin: 0.0px 0.0px 0.0px 0.0px; font: 12.0px Helvetica}
+    p.p2 {margin: 0.0px 0.0px 0.0px 0.0px; font: 12.0px Helvetica; min-height: 14.0px}
+  </style>
+</head>
+<body>
+<p class="p1">&lt;!DOCTYPE html&gt;</p>
+<p class="p1">&lt;html lang="es"&gt;</p>
+<p class="p1">&lt;head&gt;</p>
+<p class="p1"><span class="Apple-converted-space">    </span>&lt;meta charset="UTF-8"&gt;</p>
+<p class="p1"><span class="Apple-converted-space">    </span>&lt;meta name="viewport" content="width=device-width, initial-scale=1.0"&gt;</p>
+<p class="p1"><span class="Apple-converted-space">    </span>&lt;title&gt;Flashcards Pro PWA&lt;/title&gt;</p>
+<p class="p1"><span class="Apple-converted-space">    </span>&lt;script src="https://cdnjs.cloudflare.com/ajax/libs/PapaParse/5.3.2/papaparse.min.js"&gt;&lt;/script&gt;</p>
+<p class="p1"><span class="Apple-converted-space">    </span>&lt;style&gt;</p>
+<p class="p1"><span class="Apple-converted-space">        </span>:root { --primary: #4a90e2; --success: #2ecc71; --error: #e74c3c; --bg: #f4f7f6; }</p>
+<p class="p1"><span class="Apple-converted-space">        </span>body { font-family: 'Segoe UI', sans-serif; background: var(--bg); display: flex; flex-direction: column; align-items: center; padding: 20px; }</p>
+<p class="p1"><span class="Apple-converted-space">        </span>.container { max-width: 500px; width: 100%; background: white; padding: 20px; border-radius: 15px; box-shadow: 0 4px 15px rgba(0,0,0,0.1); text-align: center; }</p>
+<p class="p1"><span class="Apple-converted-space">        </span>.hidden { display: none; }</p>
+<p class="p1"><span class="Apple-converted-space">        </span>.btn { background: var(--primary); color: white; border: none; padding: 10px 20px; border-radius: 8px; cursor: pointer; margin: 5px; font-size: 1rem; }</p>
+<p class="p1"><span class="Apple-converted-space">        </span>.option-btn { display: block; width: 100%; margin: 10px 0; background: #eee; color: #333; }</p>
+<p class="p1"><span class="Apple-converted-space">        </span>.option-btn:hover { background: #ddd; }</p>
+<p class="p1"><span class="Apple-converted-space">        </span>.card { font-size: 1.4rem; font-weight: bold; margin-bottom: 20px; padding: 30px; border: 2px dashed #ccc; border-radius: 10px; }</p>
+<p class="p1"><span class="Apple-converted-space">        </span>.result-item { text-align: left; padding: 10px; border-bottom: 1px solid #ddd; }</p>
+<p class="p1"><span class="Apple-converted-space">        </span>.err-text { color: var(--error); font-weight: bold; }</p>
+<p class="p1"><span class="Apple-converted-space">        </span>.corr-text { color: var(--success); font-weight: bold; }</p>
+<p class="p1"><span class="Apple-converted-space">    </span>&lt;/style&gt;</p>
+<p class="p1">&lt;/head&gt;</p>
+<p class="p1">&lt;body&gt;</p>
+<p class="p2"><br></p>
+<p class="p1">&lt;div class="container" id="setup"&gt;</p>
+<p class="p1"><span class="Apple-converted-space">    </span>&lt;h2&gt;📚 Mis Flashcards&lt;/h2&gt;</p>
+<p class="p1"><span class="Apple-converted-space">    </span>&lt;p&gt;Sube tu archivo .csv (Formato: Pregunta, Respuesta)&lt;/p&gt;</p>
+<p class="p1"><span class="Apple-converted-space">    </span>&lt;input type="file" id="csvFile" accept=".csv" style="margin-bottom: 20px;"&gt;</p>
+<p class="p1"><span class="Apple-converted-space">    </span>&lt;div id="menu" class="hidden"&gt;</p>
+<p class="p1"><span class="Apple-converted-space">        </span>&lt;button class="btn" onclick="iniciarTest()"&gt;Empezar Test Multi-opción&lt;/button&gt;</p>
+<p class="p1"><span class="Apple-converted-space">    </span>&lt;/div&gt;</p>
+<p class="p1">&lt;/div&gt;</p>
+<p class="p2"><br></p>
+<p class="p1">&lt;div class="container hidden" id="test-area"&gt;</p>
+<p class="p1"><span class="Apple-converted-space">    </span>&lt;div id="progreso"&gt;&lt;/div&gt;</p>
+<p class="p1"><span class="Apple-converted-space">    </span>&lt;div class="card" id="pregunta-texto"&gt;&lt;/div&gt;</p>
+<p class="p1"><span class="Apple-converted-space">    </span>&lt;div id="opciones-container"&gt;&lt;/div&gt;</p>
+<p class="p1">&lt;/div&gt;</p>
+<p class="p2"><br></p>
+<p class="p1">&lt;div class="container hidden" id="resultados"&gt;</p>
+<p class="p1"><span class="Apple-converted-space">    </span>&lt;h2&gt;Resultados&lt;/h2&gt;</p>
+<p class="p1"><span class="Apple-converted-space">    </span>&lt;h3 id="puntuacion-final"&gt;&lt;/h3&gt;</p>
+<p class="p1"><span class="Apple-converted-space">    </span>&lt;div id="lista-errores"&gt;&lt;/div&gt;</p>
+<p class="p1"><span class="Apple-converted-space">    </span>&lt;button class="btn" onclick="location.reload()"&gt;Reiniciar&lt;/button&gt;</p>
+<p class="p1">&lt;/div&gt;</p>
+<p class="p2"><br></p>
+<p class="p1">&lt;script&gt;</p>
+<p class="p1"><span class="Apple-converted-space">    </span>let mazo = [];</p>
+<p class="p1"><span class="Apple-converted-space">    </span>let indiceActual = 0;</p>
+<p class="p1"><span class="Apple-converted-space">    </span>let puntuacion = 0;</p>
+<p class="p1"><span class="Apple-converted-space">    </span>let errores = [];</p>
+<p class="p2"><br></p>
+<p class="p1"><span class="Apple-converted-space">    </span>// 1. Cargar CSV</p>
+<p class="p1"><span class="Apple-converted-space">    </span>document.getElementById('csvFile').addEventListener('change', function(e) {</p>
+<p class="p1"><span class="Apple-converted-space">        </span>const file = e.target.files[0];</p>
+<p class="p1"><span class="Apple-converted-space">        </span>Papa.parse(file, {</p>
+<p class="p1"><span class="Apple-converted-space">            </span>complete: function(results) {</p>
+<p class="p1"><span class="Apple-converted-space">                </span>mazo = results.data.filter(f =&gt; f.length &gt;= 2).map(f =&gt; ({ p: f[0], r: f[1] }));</p>
+<p class="p1"><span class="Apple-converted-space">                </span>if(mazo.length &gt; 0) document.getElementById('menu').classList.remove('hidden');</p>
+<p class="p1"><span class="Apple-converted-space">            </span>}</p>
+<p class="p1"><span class="Apple-converted-space">        </span>});</p>
+<p class="p1"><span class="Apple-converted-space">    </span>});</p>
+<p class="p2"><br></p>
+<p class="p1"><span class="Apple-converted-space">    </span>function iniciarTest() {</p>
+<p class="p1"><span class="Apple-converted-space">        </span>indiceActual = 0;</p>
+<p class="p1"><span class="Apple-converted-space">        </span>puntuacion = 0;</p>
+<p class="p1"><span class="Apple-converted-space">        </span>errores = [];</p>
+<p class="p1"><span class="Apple-converted-space">        </span>document.getElementById('setup').classList.add('hidden');</p>
+<p class="p1"><span class="Apple-converted-space">        </span>document.getElementById('test-area').classList.remove('hidden');</p>
+<p class="p1"><span class="Apple-converted-space">        </span>mostrarSiguientePregunta();</p>
+<p class="p1"><span class="Apple-converted-space">    </span>}</p>
+<p class="p2"><br></p>
+<p class="p1"><span class="Apple-converted-space">    </span>function mostrarSiguientePregunta() {</p>
+<p class="p1"><span class="Apple-converted-space">        </span>if (indiceActual &gt;= mazo.length) return mostrarResultados();</p>
+<p class="p2"><br></p>
+<p class="p1"><span class="Apple-converted-space">        </span>const data = mazo[indiceActual];</p>
+<p class="p1"><span class="Apple-converted-space">        </span>document.getElementById('progreso').innerText = `Pregunta ${indiceActual + 1} de ${mazo.length}`;</p>
+<p class="p1"><span class="Apple-converted-space">        </span>document.getElementById('pregunta-texto').innerText = data.p;</p>
+<p class="p2"><span class="Apple-converted-space">        </span></p>
+<p class="p1"><span class="Apple-converted-space">        </span>// Generar opciones (Correcta + 3 aleatorias)</p>
+<p class="p1"><span class="Apple-converted-space">        </span>let opciones = [data.r];</p>
+<p class="p1"><span class="Apple-converted-space">        </span>let otrasRespuestas = mazo.filter(t =&gt; t.r !== data.r).map(t =&gt; t.r);</p>
+<p class="p1"><span class="Apple-converted-space">        </span>while(opciones.length &lt; Math.min(4, mazo.length)) {</p>
+<p class="p1"><span class="Apple-converted-space">            </span>let randomRes = otrasRespuestas[Math.floor(Math.random() * otrasRespuestas.length)];</p>
+<p class="p1"><span class="Apple-converted-space">            </span>if(!opciones.includes(randomRes)) opciones.push(randomRes);</p>
+<p class="p1"><span class="Apple-converted-space">        </span>}</p>
+<p class="p1"><span class="Apple-converted-space">        </span>opciones.sort(() =&gt; Math.random() - 0.5);</p>
+<p class="p2"><br></p>
+<p class="p1"><span class="Apple-converted-space">        </span>const container = document.getElementById('opciones-container');</p>
+<p class="p1"><span class="Apple-converted-space">        </span>container.innerHTML = '';</p>
+<p class="p1"><span class="Apple-converted-space">        </span>opciones.forEach(opt =&gt; {</p>
+<p class="p1"><span class="Apple-converted-space">            </span>const btn = document.createElement('button');</p>
+<p class="p1"><span class="Apple-converted-space">            </span>btn.className = 'btn option-btn';</p>
+<p class="p1"><span class="Apple-converted-space">            </span>btn.innerText = opt;</p>
+<p class="p1"><span class="Apple-converted-space">            </span>btn.onclick = () =&gt; verificarRespuesta(opt);</p>
+<p class="p1"><span class="Apple-converted-space">            </span>container.appendChild(btn);</p>
+<p class="p1"><span class="Apple-converted-space">        </span>});</p>
+<p class="p1"><span class="Apple-converted-space">    </span>}</p>
+<p class="p2"><br></p>
+<p class="p1"><span class="Apple-converted-space">    </span>function verificarRespuesta(elegida) {</p>
+<p class="p1"><span class="Apple-converted-space">        </span>const correcta = mazo[indiceActual].r;</p>
+<p class="p1"><span class="Apple-converted-space">        </span>if (elegida === correcta) {</p>
+<p class="p1"><span class="Apple-converted-space">            </span>puntuacion++;</p>
+<p class="p1"><span class="Apple-converted-space">        </span>} else {</p>
+<p class="p1"><span class="Apple-converted-space">            </span>errores.push({ preg: mazo[indiceActual].p, corr: correcta, tuya: elegida });</p>
+<p class="p1"><span class="Apple-converted-space">        </span>}</p>
+<p class="p1"><span class="Apple-converted-space">        </span>indiceActual++;</p>
+<p class="p1"><span class="Apple-converted-space">        </span>mostrarSiguientePregunta();</p>
+<p class="p1"><span class="Apple-converted-space">    </span>}</p>
+<p class="p2"><br></p>
+<p class="p1"><span class="Apple-converted-space">    </span>function mostrarResultados() {</p>
+<p class="p1"><span class="Apple-converted-space">        </span>document.getElementById('test-area').classList.add('hidden');</p>
+<p class="p1"><span class="Apple-converted-space">        </span>document.getElementById('resultados').classList.remove('hidden');</p>
+<p class="p1"><span class="Apple-converted-space">        </span>document.getElementById('puntuacion-final').innerText = `Puntuación: ${puntuacion} / ${mazo.length}`;</p>
+<p class="p2"><span class="Apple-converted-space">        </span></p>
+<p class="p1"><span class="Apple-converted-space">        </span>const lista = document.getElementById('lista-errores');</p>
+<p class="p1"><span class="Apple-converted-space">        </span>lista.innerHTML = errores.length &gt; 0 ? '&lt;h4&gt;Repasa tus fallos:&lt;/h4&gt;' : '&lt;h4&gt;¡Perfecto! No has fallado nada.&lt;/h4&gt;';</p>
+<p class="p2"><span class="Apple-converted-space">        </span></p>
+<p class="p1"><span class="Apple-converted-space">        </span>errores.forEach(e =&gt; {</p>
+<p class="p1"><span class="Apple-converted-space">            </span>lista.innerHTML += `</p>
+<p class="p1"><span class="Apple-converted-space">                </span>&lt;div class="result-item"&gt;</p>
+<p class="p1"><span class="Apple-converted-space">                    </span>&lt;strong&gt;P: ${e.preg}&lt;/strong&gt;&lt;br&gt;</p>
+<p class="p1"><span class="Apple-converted-space">                    </span>Tu respuesta: &lt;span class="err-text"&gt;${e.tuya}&lt;/span&gt;&lt;br&gt;</p>
+<p class="p1"><span class="Apple-converted-space">                    </span>Correcta: &lt;span class="corr-text"&gt;${e.corr}&lt;/span&gt;</p>
+<p class="p1"><span class="Apple-converted-space">                </span>&lt;/div&gt;`;</p>
+<p class="p1"><span class="Apple-converted-space">        </span>});</p>
+<p class="p1"><span class="Apple-converted-space">    </span>}</p>
+<p class="p1">&lt;/script&gt;</p>
+<p class="p1">&lt;/body&gt;</p>
+<p class="p1">&lt;/html&gt;</p>
+</body>
+</html>
