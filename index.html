@@ -6,25 +6,60 @@
     <title>Flashcards Biblioteca Pro</title>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/PapaParse/5.3.2/papaparse.min.js"></script>
     <style>
-        :root { --primary: #4a90e2; --success: #2ecc71; --error: #e74c3c; --bg: #f4f7f6; --dark: #2c3e50; }
-        body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background: var(--bg); color: var(--dark); margin: 0; padding: 20px; display: flex; flex-direction: column; align-items: center; }
-        .container { max-width: 600px; width: 100%; background: white; padding: 25px; border-radius: 20px; box-shadow: 0 10px 25px rgba(0,0,0,0.08); text-align: center; }
+        /* === CONFIGURACIÓN DE LA PROFE === */
+        :root {
+            /* 1. Cambia aquí tu nombre de profe entre las comillas */
+            --nombre-profe: "Angy the teacher";
+            
+            /* 2. Configuración de colores y estilo */
+            --primary: #4a90e2; --success: #2ecc71; --error: #e74c3c; --bg: #f4f7f6; --dark: #2c3e50;
+        }
+
+        /* === EFECTO DE MARCA DE AGUA (WATERMARK) === */
+        body::before {
+            content: var(--nombre-profe); /* Usamos el nombre que configuraste arriba */
+            position: fixed;
+            top: 0; left: 0; width: 100%; height: 100%;
+            z-index: -1; /* Lo ponemos detrás de todo */
+            
+            /* Tipografía: Cursiva y Bonita */
+            font-family: 'Great Vibes', cursive, 'Dancing Script', serif; 
+            font-size: 3rem; 
+            font-weight: 300;
+            color: rgba(74, 144, 226, 0.04); /* Azul sutilísimo y muy transparente */
+            
+            /* Efecto de Repetición (Tiling) */
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+            grid-template-rows: repeat(auto-fill, minmax(100px, 1fr));
+            gap: 5px;
+            padding: 20px;
+            justify-items: center;
+            align-items: center;
+            text-shadow: 1px 1px 2px rgba(255, 255, 255, 0.3); /* Un poco de brillo para que se vea bien en oscuro */
+            
+            /* Para que gire un poco (opcional, si te gusta recto, borra esto) */
+            /* transform: rotate(-15deg); */
+        }
+
+        /* === IMPORTAR FUENTES BONITAS (Cursivas) === */
+        @import url('https://fonts.googleapis.com/css2?family=Great+Vibes&display=swap');
+        @import url('https://fonts.googleapis.com/css2?family=Dancing+Script&display=swap');
+
+        /* === RESTO DEL ESTILO (Sin cambios) === */
+        body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background: var(--bg); color: var(--dark); margin: 0; padding: 20px; display: flex; flex-direction: column; align-items: center; position: relative; }
+        .container { max-width: 600px; width: 100%; background: white; padding: 25px; border-radius: 20px; box-shadow: 0 10px 25px rgba(0,0,0,0.08); text-align: center; position: relative; z-index: 1; /* Aseguramos que el contenido esté delante */ }
         .hidden { display: none; }
         h1 { margin-bottom: 10px; font-size: 1.8rem; }
         .section { margin-bottom: 30px; border-bottom: 1px solid #eee; padding-bottom: 20px; }
-        
-        /* Estilo de los mazos guardados */
         .mazo-item { display: flex; align-items: center; justify-content: space-between; background: #f8f9fa; margin: 10px 0; padding: 12px; border-radius: 12px; border: 1px solid #e0e0e0; }
         .mazo-info { display: flex; align-items: center; gap: 10px; font-weight: 500; }
         .btn-delete { background: #fee; color: var(--error); border: none; padding: 5px 10px; border-radius: 6px; cursor: pointer; font-size: 0.8rem; }
-        
-        /* Botones y Test */
         .btn { background: var(--primary); color: white; border: none; padding: 12px 24px; border-radius: 10px; cursor: pointer; font-size: 1rem; font-weight: 600; transition: 0.2s; width: 100%; margin-top: 10px; }
         .btn:disabled { background: #ccc; cursor: not-allowed; }
         .option-btn { display: block; width: 100%; margin: 12px 0; background: #fff; color: var(--dark); border: 2px solid #eee; padding: 15px; border-radius: 12px; font-size: 1rem; cursor: pointer; }
         .option-btn:hover { border-color: var(--primary); background: #f0f7ff; }
-        
-        .card { font-size: 1.5rem; font-weight: bold; margin: 25px 0; padding: 40px 20px; border: 3px solid var(--primary); border-radius: 20px; background: #fff; min-height: 120px; display: flex; align-items: center; justify-content: center; }
+        .card { font-size: 1.5rem; font-weight: bold; margin: 25px 0; padding: 40px 20px; border: 3px solid var(--primary); border-radius: 20px; background: #fff; min-height: 120px; display: flex; align-items: center; justify-content: center; position: relative; z-index: 2; /* Tarjeta delante de la marca de agua */ }
         #progreso { color: #888; font-size: 0.9rem; font-weight: bold; }
         .result-item { text-align: left; padding: 15px; border-bottom: 1px solid #eee; }
         input[type="text"] { width: 100%; padding: 10px; margin-bottom: 10px; border-radius: 8px; border: 1px solid #ddd; box-sizing: border-box; }
@@ -34,18 +69,15 @@
 
 <div class="container" id="app-home">
     <h1>📚 Mi Biblioteca</h1>
-    
     <div class="section">
         <h3>Subir Nueva Carpeta</h3>
         <input type="text" id="nombreMazo" placeholder="Nombre (ej: Anatomía Tema 1)">
         <input type="file" id="csvFileInput" accept=".csv">
         <button class="btn" onclick="guardarNuevoMazo()" style="background: var(--success);">+ Guardar en Biblioteca</button>
     </div>
-
     <div class="section">
         <h3>Mis Mazos Guardados</h3>
-        <div id="lista-mazos">
-            </div>
+        <div id="lista-mazos"></div>
         <p id="msg-vacio" style="color: #999;">No hay mazos guardados todavía.</p>
         <button id="btn-iniciar" class="btn" onclick="prepararTest()" disabled>Estudiar Mazos Seleccionados</button>
     </div>
@@ -66,165 +98,31 @@
 </div>
 
 <script>
+    /* === LÓGICA DE JAVASCRIPT (Sin cambios) === */
     let biblioteca = JSON.parse(localStorage.getItem('mis_mazos')) || {};
     let testMazoActual = [];
     let indiceActual = 0;
     let puntuacion = 0;
     let errores = [];
-
-    // Al cargar, mostrar los mazos guardados
     actualizarListaMazos();
-
     function guardarNuevoMazo() {
         const nombre = document.getElementById('nombreMazo').value.trim();
         const fileInput = document.getElementById('csvFileInput');
-        
-        if (!nombre || !fileInput.files[0]) {
-            alert("Por favor, pon un nombre y selecciona un archivo .csv");
-            return;
-        }
-
-        Papa.parse(fileInput.files[0], {
-            delimiter: "",
-            skipEmptyLines: true,
+        if (!nombre || !fileInput.files[0]) { alert("Por favor, pon un nombre y selecciona un archivo .csv"); return; }
+        Papa.parse(fileInput.files[ fileInput.files.length - 1 ], {
+            delimiter: "", skipEmptyLines: true,
             complete: function(results) {
-                const datos = results.data
-                    .map(f => f.filter(c => c.trim() !== ""))
-                    .filter(f => f.length >= 2)
-                    .map(f => ({ p: f[0].trim(), r: f[1].trim() }));
-
-                if (datos.length > 0) {
-                    biblioteca[nombre] = datos;
-                    localStorage.setItem('mis_mazos', JSON.stringify(biblioteca));
-                    alert("¡Mazo '" + nombre + "' guardado!");
-                    document.getElementById('nombreMazo').value = "";
-                    fileInput.value = "";
-                    actualizarListaMazos();
-                } else {
-                    alert("El archivo CSV parece estar vacío o mal formateado.");
-                }
+                const datos = results.data.map(f => f.filter(c => c.trim() !== "")).filter(f => f.length >= 2).map(f => ({ p: f[0].trim(), r: f[1].trim() }));
+                if (datos.length > 0) { biblioteca[nombre] = datos; localStorage.setItem('mis_mazos', JSON.stringify(biblioteca)); alert("¡Mazo '" + nombre + "' guardado!"); document.getElementById('nombreMazo').value = ""; fileInput.value = ""; actualizarListaMazos(); } else { alert("El archivo CSV parece estar vacío o mal formateado."); }
             }
         });
     }
-
-    function actualizarListaMazos() {
-        const contenedor = document.getElementById('lista-mazos');
-        const btnIniciar = document.getElementById('btn-iniciar');
-        const msgVacio = document.getElementById('msg-vacio');
-        contenedor.innerHTML = "";
-        
-        const nombres = Object.keys(biblioteca);
-        if (nombres.length === 0) {
-            msgVacio.style.display = "block";
-            btnIniciar.disabled = true;
-            return;
-        }
-
-        msgVacio.style.display = "none";
-        btnIniciar.disabled = false;
-
-        nombres.forEach(nombre => {
-            const div = document.createElement('div');
-            div.className = 'mazo-item';
-            div.innerHTML = `
-                <div class="mazo-info">
-                    <input type="checkbox" class="mazo-check" value="${nombre}">
-                    <span>${nombre} (${biblioteca[nombre].length} tarjetas)</span>
-                </div>
-                <button class="btn-delete" onclick="borrarMazo('${nombre}')">Eliminar</button>
-            `;
-            contenedor.appendChild(div);
-        });
-    }
-
-    function borrarMazo(nombre) {
-        if(confirm("¿Seguro que quieres borrar '" + nombre + "'?")) {
-            delete biblioteca[nombre];
-            localStorage.setItem('mis_mazos', JSON.stringify(biblioteca));
-            actualizarListaMazos();
-        }
-    }
-
-    function prepararTest() {
-        const seleccionados = Array.from(document.querySelectorAll('.mazo-check:checked')).map(c => c.value);
-        if (seleccionados.length === 0) {
-            alert("Selecciona al menos un mazo para estudiar.");
-            return;
-        }
-
-        testMazoActual = [];
-        seleccionados.forEach(n => {
-            testMazoActual = [...testMazoActual, ...biblioteca[n]];
-        });
-
-        // Mezclar mazo
-        testMazoActual.sort(() => Math.random() - 0.5);
-        
-        indiceActual = 0;
-        puntuacion = 0;
-        errores = [];
-
-        document.getElementById('app-home').classList.add('hidden');
-        document.getElementById('test-area').classList.remove('hidden');
-        mostrarSiguiente();
-    }
-
-    function mostrarSiguiente() {
-        if (indiceActual >= testMazoActual.length) return mostrarResultados();
-
-        const data = testMazoActual[indiceActual];
-        document.getElementById('progreso').innerText = `TARJETA ${indiceActual + 1} DE ${testMazoActual.length}`;
-        document.getElementById('pregunta-texto').innerText = data.p;
-        
-        let opciones = [data.r];
-        let todasLasRespuestas = testMazoActual.map(t => t.r);
-        let posiblesIncorrectas = todasLasRespuestas.filter(r => r !== data.r);
-        posiblesIncorrectas.sort(() => Math.random() - 0.5);
-        
-        for(let i=0; i < posiblesIncorrectas.length && opciones.length < 4; i++) {
-            if(!opciones.includes(posiblesIncorrectas[i])) opciones.push(posiblesIncorrectas[i]);
-        }
-        opciones.sort(() => Math.random() - 0.5);
-
-        const container = document.getElementById('opciones-container');
-        container.innerHTML = '';
-        opciones.forEach(opt => {
-            const btn = document.createElement('button');
-            btn.className = 'option-btn';
-            btn.innerText = opt;
-            btn.onclick = () => verificar(opt);
-            container.appendChild(btn);
-        });
-    }
-
-    function verificar(elegida) {
-        const correcta = testMazoActual[indiceActual].r;
-        if (elegida === correcta) {
-            puntuacion++;
-        } else {
-            errores.push({ p: testMazoActual[indiceActual].p, c: correcta, t: elegida });
-        }
-        indiceActual++;
-        setTimeout(mostrarSiguiente, 300); // Un pequeño retraso para que no sea tan brusco
-    }
-
-    function mostrarResultados() {
-        document.getElementById('test-area').classList.add('hidden');
-        document.getElementById('resultados').classList.remove('hidden');
-        document.getElementById('puntuacion-final').innerText = `¡Has acertado ${puntuacion} de ${testMazoActual.length}!`;
-        
-        const lista = document.getElementById('lista-errores');
-        lista.innerHTML = errores.length > 0 ? '<h4>Repasa tus fallos:</h4>' : '<h4>¡Perfección absoluta! ✨</h4>';
-        
-        errores.forEach(e => {
-            lista.innerHTML += `
-                <div class="result-item">
-                    <strong>P: ${e.p}</strong><br>
-                    ❌ Tuya: <span style="color:red">${e.t}</span><br>
-                    ✅ Correcta: <span style="color:green">${e.c}</span>
-                </div>`;
-        });
-    }
+    function actualizarListaMazos() { const contenedor = document.getElementById('lista-mazos'); const btnIniciar = document.getElementById('btn-iniciar'); const msgVacio = document.getElementById('msg-vacio'); contenedor.innerHTML = ""; const nombres = Object.keys(biblioteca); if (nombres.length === 0) { msgVacio.style.display = "block"; btnIniciar.disabled = true; return; } msgVacio.style.display = "none"; btnIniciar.disabled = false; nombres.forEach(nombre => { const div = document.createElement('div'); div.className = 'mazo-item'; div.innerHTML = `<div class="mazo-info"><input type="checkbox" class="mazo-check" value="${nombre}"><span>${nombre} (${biblioteca[nombre].length} tarjetas)</span></div><button class="btn-delete" onclick="borrarMazo('${nombre}')">Eliminar</button>`; contenedor.appendChild(div); }); }
+    function borrarMazo(nombre) { if(confirm("¿Seguro que quieres borrar '" + nombre + "'?")) { delete biblioteca[nombre]; localStorage.setItem('mis_mazos', JSON.stringify(biblioteca)); actualizarListaMazos(); } }
+    function prepararTest() { const seleccionados = Array.from(document.querySelectorAll('.mazo-check:checked')).map(c => c.value); if (seleccionados.length === 0) { alert("Selecciona al menos un mazo para estudiar."); return; } testMazoActual = []; seleccionados.forEach(n => { testMazoActual = [...testMazoActual, ...biblioteca[n]]; }); testMazoActual.sort(() => Math.random() - 0.5); indiceActual = 0; puntuacion = 0; errores = []; document.getElementById('app-home').classList.add('hidden'); document.getElementById('test-area').classList.remove('hidden'); mostrarSiguiente(); }
+    function mostrarSiguiente() { if (indiceActual >= testMazoActual.length) return mostrarResultados(); const data = testMazoActual[indiceActual]; document.getElementById('progreso').innerText = `TARJETA ${indiceActual + 1} DE ${testMazoActual.length}`; document.getElementById('pregunta-texto').innerText = data.p; let opciones = [data.r]; let todasLasRespuestas = testMazoActual.map(t => t.r); let posiblesIncorrectas = todasLasRespuestas.filter(r => r !== data.r); posiblesIncorrectas.sort(() => Math.random() - 0.5); for(let i=0; i < posiblesIncorrectas.length && opciones.length < 4; i++) { if(!opciones.includes(posiblesIncorrectas[i])) opciones.push(posiblesIncorrectas[i]); } opciones.sort(() => Math.random() - 0.5); const container = document.getElementById('opciones-container'); container.innerHTML = ''; opciones.forEach(opt => { const btn = document.createElement('button'); btn.className = 'option-btn'; btn.innerText = opt; btn.onclick = () => verificar(opt); container.appendChild(btn); }); }
+    function verificar(elegida) { const correcta = testMazoActual[indiceActual].r; if (elegida === correcta) { puntuacion++; } else { errores.push({ p: testMazoActual[indiceActual].p, c: correcta, t: elegida }); } indiceActual++; setTimeout(mostrarSiguiente, 300); }
+    function mostrarResultados() { document.getElementById('test-area').classList.add('hidden'); document.getElementById('resultados').classList.remove('hidden'); document.getElementById('puntuacion-final').innerText = `¡Has acertado ${puntuacion} de ${testMazoActual.length}!`; const lista = document.getElementById('lista-errores'); lista.innerHTML = errores.length > 0 ? '<h4>Repasa tus fallos:</h4>' : '<h4>¡Perfección absoluta! ✨</h4>'; errores.forEach(e => { lista.innerHTML += `<div class="result-item"><strong>P: ${e.p}</strong><br>❌ Tuya: <span style="color:red">${e.t}</span><br>✅ Correcta: <span style="color:green">${e.c}</span></div>`; }); }
 </script>
 </body>
 </html>
