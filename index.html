@@ -124,7 +124,34 @@
             }
         });
     }
-    function actualizarListaMazos() { const contenedor = document.getElementById('lista-mazos'); const btnIniciar = document.getElementById('btn-iniciar'); const msgVacio = document.getElementById('msg-vacio'); contenedor.innerHTML = ""; const nombres = Object.keys(biblioteca); if (nombres.length === 0) { msgVacio.style.display = "block"; btnIniciar.disabled = true; return; } msgVacio.style.display = "none"; btnIniciar.disabled = false; nombres.forEach(nombre => { const div = document.createElement('div'); div.className = 'mazo-item'; div.innerHTML = `<div class="mazo-info"><input type="checkbox" class="mazo-check" value="${nombre}"><span>${nombre} (${biblioteca[nombre].length} tarjetas)</span></div><button class="btn-delete" onclick="borrarMazo('${nombre}')">Eliminar</button>`; contenedor.appendChild(div); }); }
+    function actualizarListaMazos() {
+        const contenedor = document.getElementById('lista-mazos');
+        const btnIniciar = document.getElementById('btn-iniciar');
+        const msgVacio = document.getElementById('msg-vacio'); 
+        contenedor.innerHTML = ""; 
+        const nombres = Object.keys(biblioteca);
+        
+        if (nombres.length === 0)
+        { 
+            msgVacio.style.display = "block";
+            btnIniciar.disabled = true; 
+            return; 
+        } 
+        msgVacio.style.display = "none";
+        btnIniciar.disabled = false; 
+        nombres.forEach(nombre => 
+            {
+                const div = document.createElement('div');
+                div.className = 'mazo-item';
+                div.innerHTML = 
+                    `<div class="mazo-info">
+                    <input type="checkbox" class="mazo-check" value="${nombre}">
+                    <span>${nombre} (${biblioteca[nombre].length} tarjetas)</span>
+                    </div>
+                    <button class="btn-delete" onclick="borrarMazo('${nombre}')">Eliminar</button>`;
+                contenedor.appendChild(div); 
+            }); 
+    }
     function borrarMazo(nombre) { if(confirm("¿Seguro que quieres borrar '" + nombre + "'?")) { delete biblioteca[nombre]; localStorage.setItem('mis_mazos', JSON.stringify(biblioteca)); actualizarListaMazos(); } }
     function prepararTest() { const seleccionados = Array.from(document.querySelectorAll('.mazo-check:checked')).map(c => c.value); if (seleccionados.length === 0) { alert("Selecciona al menos un mazo para estudiar."); return; } testMazoActual = []; seleccionados.forEach(n => { testMazoActual = [...testMazoActual, ...biblioteca[n]]; }); testMazoActual.sort(() => Math.random() - 0.5); indiceActual = 0; puntuacion = 0; errores = []; document.getElementById('app-home').classList.add('hidden'); document.getElementById('test-area').classList.remove('hidden'); mostrarSiguiente(); }
     function mostrarSiguiente() { if (indiceActual >= testMazoActual.length) return mostrarResultados(); const data = testMazoActual[indiceActual]; document.getElementById('progreso').innerText = `TARJETA ${indiceActual + 1} DE ${testMazoActual.length}`; document.getElementById('pregunta-texto').innerText = data.p; let opciones = [data.r]; let todasLasRespuestas = testMazoActual.map(t => t.r); let posiblesIncorrectas = todasLasRespuestas.filter(r => r !== data.r); posiblesIncorrectas.sort(() => Math.random() - 0.5); for(let i=0; i < posiblesIncorrectas.length && opciones.length < 4; i++) { if(!opciones.includes(posiblesIncorrectas[i])) opciones.push(posiblesIncorrectas[i]); } opciones.sort(() => Math.random() - 0.5); const container = document.getElementById('opciones-container'); container.innerHTML = ''; opciones.forEach(opt => { const btn = document.createElement('button'); btn.className = 'option-btn'; btn.innerText = opt; btn.onclick = () => verificar(opt); container.appendChild(btn); }); }
