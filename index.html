@@ -12,29 +12,29 @@
         .hidden { display: none; }
         .btn { background: var(--primary); color: white; border: none; padding: 12px 20px; border-radius: 8px; cursor: pointer; margin: 5px; font-size: 1rem; transition: 0.3s; }
         .btn:hover { opacity: 0.8; }
-        .option-btn { display: block; width: 100%; margin: 10px 0; background: #f8f9fa; color: #333; border: 1px solid #ddd; }
-        .option-btn:hover { background: #e9ecef; }
-        .card { font-size: 1.3rem; font-weight: bold; margin: 20px 0; padding: 25px; border: 2px solid var(--primary); border-radius: 12px; background: #fff; min-height: 80px; display: flex; align-items: center; justify-content: center; }
+        .option-btn { display: block; width: 100%; margin: 10px 0; background: #f8f9fa; color: #333; border: 1px solid #ddd; padding: 15px; font-size: 1rem; border-radius: 10px; }
+        .option-btn:hover { background: #e9ecef; border-color: var(--primary); }
+        .card { font-size: 1.4rem; font-weight: bold; margin: 20px 0; padding: 30px; border: 3px solid var(--primary); border-radius: 15px; background: #fff; min-height: 100px; display: flex; align-items: center; justify-content: center; box-shadow: inset 0 0 10px rgba(0,0,0,0.05); }
+        #progreso { color: #666; font-size: 0.9rem; margin-bottom: 10px; font-weight: 600; }
         .result-item { text-align: left; padding: 15px; border-bottom: 1px solid #eee; }
         .err-text { color: var(--error); font-weight: bold; }
         .corr-text { color: var(--success); font-weight: bold; }
-        #progreso { color: #666; font-size: 0.9rem; margin-bottom: 10px; }
     </style>
 </head>
 <body>
 
 <div class="container" id="setup">
     <h2>📚 Mis Flashcards</h2>
-    <p>Sube tu archivo .csv de Numbers o Excel</p>
+    <p>Sube tu archivo .csv (Numbers o Excel)</p>
     <input type="file" id="csvFile" accept=".csv" style="margin-bottom: 20px;">
     <div id="menu" class="hidden">
-        <button class="btn" onclick="iniciarTest()">Empezar Test Multi-opción</button>
+        <button class="btn" onclick="iniciarTest()">Empezar Test</button>
     </div>
 </div>
 
 <div class="container hidden" id="test-area">
     <div id="progreso"></div>
-    <div class="card" id="pregunta-texto"></div>
+    <div class="card" id="pregunta-texto">Cargando...</div>
     <div id="opciones-container"></div>
 </div>
 
@@ -54,18 +54,23 @@
     document.getElementById('csvFile').addEventListener('change', function(e) {
         const file = e.target.files[0];
         Papa.parse(file, {
-            delimiter: "", // Auto-detecta si es coma o punto y coma
+            delimiter: "", 
             skipEmptyLines: true,
             complete: function(results) {
-                // Limpiamos los datos por si hay espacios raros
+                // LÓGICA DE LIMPIEZA AVANZADA
                 mazo = results.data
-                    .filter(f => f.length >= 2)
-                    .map(f => ({ p: f[0].trim(), r: f[1].trim() }));
-                
+                    .map(fila => fila.filter(celda => celda.trim() !== "")) // Quitar celdas vacías en la fila
+                    .filter(fila => fila.length >= 2) // Solo filas con al menos 2 datos
+                    .map(fila => ({
+                        p: fila[0].trim(),
+                        r: fila[1].trim()
+                    }));
+
                 if(mazo.length > 0) {
                     document.getElementById('menu').classList.remove('hidden');
+                    alert("¡Cargadas " + mazo.length + " tarjetas correctamente!");
                 } else {
-                    alert("No se han encontrado preguntas. Revisa que el CSV tenga dos columnas.");
+                    alert("No pudimos leer las preguntas. Asegúrate de que el archivo tenga al menos dos columnas con texto.");
                 }
             }
         });
@@ -87,26 +92,28 @@
         document.getElementById('progreso').innerText = `Pregunta ${indiceActual + 1} de ${mazo.length}`;
         document.getElementById('pregunta-texto').innerText = data.p;
         
+        // Generar opciones
         let opciones = [data.r];
-        let otrasRespuestas = mazo.filter(t => t.r !== data.r).map(t => t.r);
+        let todasLasRespuestas = mazo.map(t => t.r);
         
-        // Mezclamos respuestas incorrectas
-        otrasRespuestas.sort(() => Math.random() - 0.5);
+        // Mezclar todas las posibles respuestas para elegir incorrectas
+        let posiblesIncorrectas = todasLasRespuestas.filter(r => r !== data.r);
+        posiblesIncorrectas.sort(() => Math.random() - 0.5);
         
-        // Añadimos hasta 3 incorrectas
-        for(let i=0; i < otrasRespuestas.length && opciones.length < 4; i++) {
-            if(!opciones.includes(otrasRespuestas[i])) {
-                opciones.push(otrasRespuestas[i]);
+        for(let i=0; i < posiblesIncorrectas.length && opciones.length < 4; i++) {
+            if(!opciones.includes(posiblesIncorrectas[i])) {
+                opciones.push(posiblesIncorrectas[i]);
             }
         }
         
+        // Mezclar las 4 opciones finales
         opciones.sort(() => Math.random() - 0.5);
 
         const container = document.getElementById('opciones-container');
         container.innerHTML = '';
         opciones.forEach(opt => {
             const btn = document.createElement('button');
-            btn.className = 'btn option-btn';
+            btn.className = 'option-btn';
             btn.innerText = opt;
             btn.onclick = () => verificarRespuesta(opt);
             container.appendChild(btn);
@@ -130,7 +137,7 @@
         document.getElementById('puntuacion-final').innerText = `Puntuación: ${puntuacion} / ${mazo.length}`;
         
         const lista = document.getElementById('lista-errores');
-        lista.innerHTML = errores.length > 0 ? '<h4>Repasa tus fallos:</h4>' : '<h4>¡Perfecto! Todo acertado.</h4>';
+        lista.innerHTML = errores.length > 0 ? '<h4>Errores cometidos:</h4>' : '<h4>¡Impresionante! ¡Has acertado todas!</h4>';
         
         errores.forEach(e => {
             lista.innerHTML += `
