@@ -3,43 +3,50 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Flashcards Biblioteca Angy the teacher</title>
+    <title>Flashcards Biblioteca Pro - Angy Edición Gigante</title>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/PapaParse/5.3.2/papaparse.min.js"></script>
     <style>
         /* === CONFIGURACIÓN DE LA PROFE === */
         :root {
             /* 1. Cambia aquí tu nombre de profe entre las comillas */
-            --nombre-profe: "Angy the teacher";
+            --nombre-profe: "Angy the teacher (Tu Nombre Aquí)";
             
             /* 2. Configuración de colores y estilo */
             --primary: #4a90e2; --success: #2ecc71; --error: #e74c3c; --bg: #f4f7f6; --dark: #2c3e50;
         }
 
-        /* === EFECTO DE MARCA DE AGUA (WATERMARK) === */
+        /* === EFECTO DE MARCA DE AGUA SUPER-GIGANTE Y CENTRAL === */
         body::before {
             content: var(--nombre-profe); /* Usamos el nombre que configuraste arriba */
             position: fixed;
-            top: 0; left: 0; width: 100%; height: 100%;
+            top: 50%; left: 50%; /* Central */
+            transform: translate(-50%, -50%) rotate(0deg); /* Central y sin girar */
             z-index: -1; /* Lo ponemos detrás de todo */
             
             /* Tipografía: Cursiva y Bonita */
             font-family: 'Great Vibes', cursive, 'Dancing Script', serif; 
-            font-size: calc(10vw + 2rem); 
+            
+            /* === EL AJUSTE GIGANTE === */
+            /* font-size: 8rem; /* ¡Tamaño masivo! Ajusta este número según te guste */
+            /* font-size: calc(10vw + 2rem); /* Ojo, este es dinámico y ocupa según la pantalla */
+            font-size: 8rem; /* Prueba con este tamaño fijo primero */
+
             font-weight: 300;
-            color: rgba(74, 144, 226, 0.2); /* Azul sutilísimo y muy transparente */
             
-            /* Efecto de Repetición (Tiling) */
-            display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
-            grid-template-rows: repeat(auto-fill, minmax(100px, 1fr));
-            gap: 5px;
-            padding: 20px;
-            justify-items: center;
-            align-items: center;
-            text-shadow: 1px 1px 2px rgba(255, 255, 255, 0.3); /* Un poco de brillo para que se vea bien en oscuro */
+            /* === LA SUTILIDAD === */
+            /* Un color azul sutilísimo y extremadamente transparente (0.015).
+               Es casi invisible, solo se nota el contorno cuando te fijas. */
+            color: rgba(74, 144, 226, 0.015); 
             
-            /* Para que gire un poco (opcional, si te gusta recto, borra esto) */
-            /* transform: rotate(-15deg); */
+            /* === GESTIÓN DE ANCHO === */
+            width: 90vw; /* Ocupa el 90% del ancho de la pantalla */
+            text-align: center; /* Centrar el texto gigante */
+            
+            /* Para que no se corte y ocupe todo de un lateral a otro */
+            white-space: nowrap; 
+            
+            pointer-events: none; /* No molesta al hacer clic */
+            overflow: hidden; /* Aseguramos que nada se corte raramente */
         }
 
         /* === IMPORTAR FUENTES BONITAS (Cursivas) === */
@@ -47,8 +54,8 @@
         @import url('https://fonts.googleapis.com/css2?family=Dancing+Script&display=swap');
 
         /* === RESTO DEL ESTILO (Sin cambios) === */
-        body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background: var(--bg); color: var(--dark); margin: 0; padding: 20px; display: flex; flex-direction: column; align-items: center; position: relative; }
-        .container { max-width: 600px; width: 100%; background: white; padding: 25px; border-radius: 20px; box-shadow: 0 10px 25px rgba(0,0,0,0.08); text-align: center; position: relative; z-index: 1; /* Aseguramos que el contenido esté delante */ }
+        body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background: var(--bg); color: var(--dark); margin: 0; padding: 20px; display: flex; flex-direction: column; align-items: center; position: relative; min-height: 100vh; justify-content: center; }
+        .container { max-width: 600px; width: 100%; background: white; padding: 25px; border-radius: 20px; box-shadow: 0 10px 25px rgba(0,0,0,0.08); text-align: center; position: relative; z-index: 1; /* Aseguramos que el contenido esté delante */ margin-bottom: 20px; }
         .hidden { display: none; }
         h1 { margin-bottom: 10px; font-size: 1.8rem; }
         .section { margin-bottom: 30px; border-bottom: 1px solid #eee; padding-bottom: 20px; }
@@ -57,10 +64,10 @@
         .btn-delete { background: #fee; color: var(--error); border: none; padding: 5px 10px; border-radius: 6px; cursor: pointer; font-size: 0.8rem; }
         .btn { background: var(--primary); color: white; border: none; padding: 12px 24px; border-radius: 10px; cursor: pointer; font-size: 1rem; font-weight: 600; transition: 0.2s; width: 100%; margin-top: 10px; }
         .btn:disabled { background: #ccc; cursor: not-allowed; }
-        .option-btn { display: block; width: 100%; margin: 12px 0; background: #fff; color: var(--dark); border: 2px solid #eee; padding: 15px; border-radius: 12px; font-size: 1rem; cursor: pointer; }
-        .option-btn:hover { border-color: var(--primary); background: #f0f7ff; }
-        .card { font-size: 1.5rem; font-weight: bold; margin: 25px 0; padding: 40px 20px; border: 3px solid var(--primary); border-radius: 20px; background: #fff; min-height: 120px; display: flex; align-items: center; justify-content: center; position: relative; z-index: 2; /* Tarjeta delante de la marca de agua */ }
-        #progreso { color: #888; font-size: 0.9rem; font-weight: bold; }
+        .option-btn { display: block; width: 100%; margin: 12px 0; background: #fff; color: var(--dark); border: 2px solid #eee; padding: 15px; border-radius: 12px; font-size: 1rem; cursor: pointer; transition: 0.15s; }
+        .option-btn:hover { border-color: var(--primary); background: #f0f7ff; transform: scale(1.02); }
+        .card { font-size: 1.5rem; font-weight: bold; margin: 25px 0; padding: 40px 20px; border: 3px solid var(--primary); border-radius: 20px; background: #fff; min-height: 120px; display: flex; align-items: center; justify-content: center; position: relative; z-index: 2; /* Tarjeta delante de la marca de agua */ box-shadow: 0 4px 10px rgba(0,0,0,0.05); }
+        #progreso { color: #888; font-size: 0.9rem; font-weight: bold; margin-bottom: 5px; }
         .result-item { text-align: left; padding: 15px; border-bottom: 1px solid #eee; }
         input[type="text"] { width: 100%; padding: 10px; margin-bottom: 10px; border-radius: 8px; border: 1px solid #ddd; box-sizing: border-box; }
     </style>
@@ -85,7 +92,7 @@
 
 <div class="container hidden" id="test-area">
     <div id="progreso"></div>
-    <div class="card" id="pregunta-texto"></div>
+    <div class="card" id="pregunta-texto">Cargando...</div>
     <div id="opciones-container"></div>
     <button class="btn" style="background: #999; margin-top: 20px;" onclick="location.reload()">Abandonar</button>
 </div>
@@ -98,7 +105,7 @@
 </div>
 
 <script>
-    /* === LÓGICA DE JAVASCRIPT (Sin cambios) === */
+    /* ... (Mismo JavaScript de antes) ... */
     let biblioteca = JSON.parse(localStorage.getItem('mis_mazos')) || {};
     let testMazoActual = [];
     let indiceActual = 0;
