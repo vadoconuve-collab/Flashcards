@@ -2,161 +2,65 @@
 <html lang="es">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Flashcards Angy the Teacher</title>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/PapaParse/5.3.2/papaparse.min.js"></script>
+    <title>Flashcards Pro - Modo Anki</title>
     <style>
-        /* === CONFIGURACIÓN DE LA PROFE === */
-        :root {
-            /* 1. Cambia aquí tu nombre de profe entre las comillas */
-            --nombre-profe: "Angy the Teacher";
-            
-            /* 2. Configuración de colores y estilo */
-            --primary: #4a90e2; --success: #2ecc71; --error: #e74c3c; --bg: #f4f7f6; --dark: #2c3e50;
-        }
-
-        /* === EFECTO DE MARCA DE AGUA SUPER-GIGANTE Y CENTRAL === */
-        body::before {
-            content: var(--nombre-profe); /* Usamos el nombre que configuraste arriba */
-            position: fixed;
-            top: 50%; left: 50%; /* Central */
-            transform: translate(-50%, -50%) rotate(0deg); /* Central y sin girar */
-            z-index: -1; /* Lo ponemos detrás de todo */
-            
-            /* Tipografía: Cursiva y Bonita */
-            font-family: 'Great Vibes', cursive, 'Dancing Script', serif; 
-            
-            /* === EL AJUSTE GIGANTE === */
-            /* font-size: 8rem; /* ¡Tamaño masivo! Ajusta este número según te guste */
-            /* font-size: calc(10vw + 2rem); /* Ojo, este es dinámico y ocupa según la pantalla */
-            font-size: 8rem; /* Prueba con este tamaño fijo primero */
-
-            font-weight: 300;
-            
-            /* === LA SUTILIDAD === */
-            /* Un color azul sutilísimo y extremadamente transparente (0.015).
-               Es casi invisible, solo se nota el contorno cuando te fijas. */
-            color: rgba(74, 144, 226, 0.2); 
-            
-            /* === GESTIÓN DE ANCHO === */
-            width: 90vw; /* Ocupa el 90% del ancho de la pantalla */
-            text-align: center; /* Centrar el texto gigante */
-            
-            /* Para que no se corte y ocupe todo de un lateral a otro */
-            white-space: nowrap; 
-            
-            pointer-events: none; /* No molesta al hacer clic */
-            overflow: hidden; /* Aseguramos que nada se corte raramente */
-        }
-
-        /* === IMPORTAR FUENTES BONITAS (Cursivas) === */
-        @import url('https://fonts.googleapis.com/css2?family=Great+Vibes&display=swap');
-        @import url('https://fonts.googleapis.com/css2?family=Dancing+Script&display=swap');
-
-        /* === RESTO DEL ESTILO (Sin cambios) === */
-        body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background: var(--bg); color: var(--dark); margin: 0; padding: 20px; display: flex; flex-direction: column; align-items: center; position: relative; min-height: 100vh; justify-content: center; }
-        .container { max-width: 600px; width: 100%; background: white; padding: 25px; border-radius: 20px; box-shadow: 0 10px 25px rgba(0,0,0,0.08); text-align: center; position: relative; z-index: 1; /* Aseguramos que el contenido esté delante */ margin-bottom: 20px; }
-        .hidden { display: none; }
-        h1 { margin-bottom: 10px; font-size: 1.8rem; }
-        .section { margin-bottom: 30px; border-bottom: 1px solid #eee; padding-bottom: 20px; }
-        .mazo-item { display: flex; align-items: center; justify-content: space-between; background: #f8f9fa; margin: 10px 0; padding: 12px; border-radius: 12px; border: 1px solid #e0e0e0; }
-        .mazo-info { display: flex; align-items: center; gap: 10px; font-weight: 500; }
-        .btn-delete { background: #fee; color: var(--error); border: none; padding: 5px 10px; border-radius: 6px; cursor: pointer; font-size: 0.8rem; }
-        .btn { background: var(--primary); color: white; border: none; padding: 12px 24px; border-radius: 10px; cursor: pointer; font-size: 1rem; font-weight: 600; transition: 0.2s; width: 100%; margin-top: 10px; }
-        .btn:disabled { background: #ccc; cursor: not-allowed; }
-        .option-btn { display: block; width: 100%; margin: 12px 0; background: #fff; color: var(--dark); border: 2px solid #eee; padding: 15px; border-radius: 12px; font-size: 1rem; cursor: pointer; transition: 0.15s; }
-        .option-btn:hover { border-color: var(--primary); background: #f0f7ff; transform: scale(1.02); }
-        .card { font-size: 1.5rem; font-weight: bold; margin: 25px 0; padding: 40px 20px; border: 3px solid var(--primary); border-radius: 20px; background: #fff; min-height: 120px; display: flex; align-items: center; justify-content: center; position: relative; z-index: 2; /* Tarjeta delante de la marca de agua */ box-shadow: 0 4px 10px rgba(0,0,0,0.05); }
-        #progreso { color: #888; font-size: 0.9rem; font-weight: bold; margin-bottom: 5px; }
-        .result-item { text-align: left; padding: 15px; border-bottom: 1px solid #eee; }
-        input[type="text"] { width: 100%; padding: 10px; margin-bottom: 10px; border-radius: 8px; border: 1px solid #ddd; box-sizing: border-box; }
+        /* ... Estilos anteriores ... */
+        .card-flip { perspective: 1000px; width: 100%; height: 200px; cursor: pointer; }
+        .card-inner { position: relative; width: 100%; height: 100%; transition: transform 0.6s; transform-style: preserve-3d; }
+        .card-flip.flipped .card-inner { transform: rotateY(180deg); }
+        .card-front, .card-back { position: absolute; width: 100%; height: 100%; backface-visibility: hidden; display: flex; align-items: center; justify-content: center; border: 2px solid #4a90e2; border-radius: 15px; padding: 20px; box-sizing: border-box; background: white; font-size: 1.5rem; }
+        .card-back { transform: rotateY(180deg); background: #f0f7ff; }
+        .nav-btns { margin-top: 20px; display: flex; justify-content: space-between; }
     </style>
 </head>
 <body>
 
-<div class="container" id="app-home">
-    <h1>📚 Mi Biblioteca</h1>
-    <div class="section">
-        <h3>Subir Nueva Carpeta</h3>
-        <input type="text" id="nombreMazo" placeholder="Nombre (ej: Anatomía Tema 1)">
-        <input type="file" id="csvFileInput" accept=".csv">
-        <button class="btn" onclick="guardarNuevoMazo()" style="background: var(--success);">+ Guardar en Biblioteca</button>
-    </div>
-    <div class="section">
-        <h3>Mis Mazos Guardados</h3>
-        <div id="lista-mazos"></div>
-        <p id="msg-vacio" style="color: #999;">No hay mazos guardados todavía.</p>
-        <button id="btn-iniciar" class="btn" onclick="prepararTest()" disabled>Estudiar Mazos Seleccionados</button>
-    </div>
-</div>
+<button class="btn" style="background: #6c5ce7;" onclick="prepararRepaso()">Modo Repaso (Anki)</button>
 
-<div class="container hidden" id="test-area">
-    <div id="progreso"></div>
-    <div class="card" id="pregunta-texto">Cargando...</div>
-    <div id="opciones-container"></div>
-    <button class="btn" style="background: #999; margin-top: 20px;" onclick="location.reload()">Abandonar</button>
-</div>
-
-<div class="container hidden" id="resultados">
-    <h2>Resultados</h2>
-    <h3 id="puntuacion-final"></h3>
-    <div id="lista-errores" style="max-height: 300px; overflow-y: auto;"></div>
-    <button class="btn" onclick="location.reload()">Volver al Inicio</button>
+<div class="container hidden" id="repaso-area">
+    <div id="progreso-repaso"></div>
+    <div class="card-flip" id="card-flip" onclick="this.classList.toggle('flipped')">
+        <div class="card-inner">
+            <div class="card-front" id="frente"></div>
+            <div class="card-back" id="dorso"></div>
+        </div>
+    </div>
+    <div class="nav-btns">
+        <button class="btn" style="width: 45%" onclick="cambiarTarjeta(-1)">← Anterior</button>
+        <button class="btn" style="width: 45%" onclick="cambiarTarjeta(1)">Siguiente →</button>
+    </div>
+    <button class="btn" style="background: #999" onclick="location.reload()">Volver</button>
 </div>
 
 <script>
-    /* ... (Mismo JavaScript de antes) ... */
-    let biblioteca = JSON.parse(localStorage.getItem('mis_mazos')) || {};
-    let testMazoActual = [];
-    let indiceActual = 0;
-    let puntuacion = 0;
-    let errores = [];
-    actualizarListaMazos();
-    function guardarNuevoMazo() {
-        const nombre = document.getElementById('nombreMazo').value.trim();
-        const fileInput = document.getElementById('csvFileInput');
-        if (!nombre || !fileInput.files[0]) { alert("Por favor, pon un nombre y selecciona un archivo .csv"); return; }
-        Papa.parse(fileInput.files[ fileInput.files.length - 1 ], {
-            delimiter: "", skipEmptyLines: true,
-            complete: function(results) {
-                const datos = results.data.map(f => f.filter(c => c.trim() !== "")).filter(f => f.length >= 2).map(f => ({ p: f[0].trim(), r: f[1].trim() }));
-                if (datos.length > 0) { biblioteca[nombre] = datos; localStorage.setItem('mis_mazos', JSON.stringify(biblioteca)); alert("¡Mazo '" + nombre + "' guardado!"); document.getElementById('nombreMazo').value = ""; fileInput.value = ""; actualizarListaMazos(); } else { alert("El archivo CSV parece estar vacío o mal formateado."); }
-            }
-        });
-    }
-    function actualizarListaMazos() {
-        const contenedor = document.getElementById('lista-mazos');
-        const btnIniciar = document.getElementById('btn-iniciar');
-        const msgVacio = document.getElementById('msg-vacio'); 
-        contenedor.innerHTML = ""; 
-        const nombres = Object.keys(biblioteca);
+    let tarjetasRepaso = [];
+    let indiceRepaso = 0;
+
+    function prepararRepaso() {
+        const seleccionados = Array.from(document.querySelectorAll('.mazo-check:checked')).map(c => c.value);
+        if (seleccionados.length === 0) return alert("Selecciona mazos");
         
-        if (nombres.length === 0)
-        { 
-            msgVacio.style.display = "block";
-            btnIniciar.disabled = true; 
-            return; 
-        } 
-        msgVacio.style.display = "none";
-        btnIniciar.disabled = false; 
-        nombres.forEach(nombre => 
-            {
-                const div = document.createElement('div');
-                div.className = 'mazo-item';
-                div.innerHTML = 
-                    `<div class="mazo-info">
-                    <input type="checkbox" class="mazo-check" value="${nombre}">
-                    <span>${nombre} (${biblioteca[nombre].length} tarjetas)</span>
-                    </div>
-                    <button class="btn-delete" onclick="borrarMazo('${nombre}')">Eliminar</button>`;
-                contenedor.appendChild(div); 
-            }); 
+        tarjetasRepaso = [];
+        seleccionados.forEach(n => tarjetasRepaso.push(...biblioteca[n]));
+        
+        document.getElementById('app-home').classList.add('hidden');
+        document.getElementById('repaso-area').classList.remove('hidden');
+        mostrarTarjetaRepaso();
     }
-    function borrarMazo(nombre) { if(confirm("¿Seguro que quieres borrar '" + nombre + "'?")) { delete biblioteca[nombre]; localStorage.setItem('mis_mazos', JSON.stringify(biblioteca)); actualizarListaMazos(); } }
-    function prepararTest() { const seleccionados = Array.from(document.querySelectorAll('.mazo-check:checked')).map(c => c.value); if (seleccionados.length === 0) { alert("Selecciona al menos un mazo para estudiar."); return; } testMazoActual = []; seleccionados.forEach(n => { testMazoActual = [...testMazoActual, ...biblioteca[n]]; }); testMazoActual.sort(() => Math.random() - 0.5); indiceActual = 0; puntuacion = 0; errores = []; document.getElementById('app-home').classList.add('hidden'); document.getElementById('test-area').classList.remove('hidden'); mostrarSiguiente(); }
-    function mostrarSiguiente() { if (indiceActual >= testMazoActual.length) return mostrarResultados(); const data = testMazoActual[indiceActual]; document.getElementById('progreso').innerText = `TARJETA ${indiceActual + 1} DE ${testMazoActual.length}`; document.getElementById('pregunta-texto').innerText = data.p; let opciones = [data.r]; let todasLasRespuestas = testMazoActual.map(t => t.r); let posiblesIncorrectas = todasLasRespuestas.filter(r => r !== data.r); posiblesIncorrectas.sort(() => Math.random() - 0.5); for(let i=0; i < posiblesIncorrectas.length && opciones.length < 4; i++) { if(!opciones.includes(posiblesIncorrectas[i])) opciones.push(posiblesIncorrectas[i]); } opciones.sort(() => Math.random() - 0.5); const container = document.getElementById('opciones-container'); container.innerHTML = ''; opciones.forEach(opt => { const btn = document.createElement('button'); btn.className = 'option-btn'; btn.innerText = opt; btn.onclick = () => verificar(opt); container.appendChild(btn); }); }
-    function verificar(elegida) { const correcta = testMazoActual[indiceActual].r; if (elegida === correcta) { puntuacion++; } else { errores.push({ p: testMazoActual[indiceActual].p, c: correcta, t: elegida }); } indiceActual++; setTimeout(mostrarSiguiente, 300); }
-    function mostrarResultados() { document.getElementById('test-area').classList.add('hidden'); document.getElementById('resultados').classList.remove('hidden'); document.getElementById('puntuacion-final').innerText = `¡Has acertado ${puntuacion} de ${testMazoActual.length}!`; const lista = document.getElementById('lista-errores'); lista.innerHTML = errores.length > 0 ? '<h4>Repasa tus fallos:</h4>' : '<h4>¡Perfección absoluta! ✨</h4>'; errores.forEach(e => { lista.innerHTML += `<div class="result-item"><strong>P: ${e.p}</strong><br>❌ Tuya: <span style="color:red">${e.t}</span><br>✅ Correcta: <span style="color:green">${e.c}</span></div>`; }); }
+
+    function mostrarTarjetaRepaso() {
+        document.getElementById('frente').innerText = tarjetasRepaso[indiceRepaso].p;
+        document.getElementById('dorso').innerText = tarjetasRepaso[indiceRepaso].r;
+        document.getElementById('card-flip').classList.remove('flipped');
+        document.getElementById('progreso-repaso').innerText = `Tarjeta ${indiceRepaso + 1} / ${tarjetasRepaso.length}`;
+    }
+
+    function cambiarTarjeta(dir) {
+        indiceRepaso += dir;
+        if (indiceRepaso < 0) indiceRepaso = 0;
+        if (indiceRepaso >= tarjetasRepaso.length) indiceRepaso = tarjetasRepaso.length - 1;
+        mostrarTarjetaRepaso();
+    }
 </script>
 </body>
 </html>
