@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Flashcards Angy the Teacher - Pro</title>
+    <title>Flashcards Angy the Teacher - Pro Cloud</title>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/PapaParse/5.3.2/papaparse.min.js"></script>
     <style>
         :root {
@@ -24,18 +24,16 @@
         .hidden { display: none; }
         
         .btn { background: var(--primary); color: white; border: none; padding: 15px 24px; border-radius: 12px; cursor: pointer; font-weight: 600; width: 100%; margin-top: 15px; font-size: 1rem; transition: 0.2s; }
+        .btn-mini { width: auto; margin: 0; padding: 8px 15px; font-size: 0.9rem; background: var(--dark); }
         .btn-secondary { background: #6c757d; margin-top: 10px; }
         .btn-check { background: var(--success); }
         
         .mazo-item { display: flex; align-items: center; justify-content: space-between; background: #f8f9fa; margin: 12px 0; padding: 15px; border-radius: 12px; border: 1px solid #e0e0e0; text-align: left; }
-        .card { font-size: 1.8rem; font-weight: bold; margin: 20px 0; padding: 40px 20px; border: 3px solid var(--primary); border-radius: 25px; background: #fff; min-height: 120px; display: flex; flex-direction: column; align-items: center; justify-content: center; box-shadow: 0 8px 20px rgba(0,0,0,0.05); }
+        .card { font-size: 1.8rem; font-weight: bold; margin: 20px 0; padding: 40px 20px; border: 3px solid var(--primary); border-radius: 25px; background: #fff; min-height: 120px; display: flex; flex-direction: column; align-items: center; justify-content: center; box-shadow: 0 8px 20px rgba(0,0,0,0.05); cursor: pointer; }
         
         input[type="text"] { width: 100%; padding: 15px; font-size: 1.2rem; border-radius: 10px; border: 2px solid #ddd; text-align: center; box-sizing: border-box; outline: none; }
-        input[type="text"]:focus { border-color: var(--primary); }
-        
+        .answer-text { display: none; margin-top: 20px; color: var(--success); font-size: 1.4rem; border-top: 1px solid #eee; padding-top: 15px; width: 80%; }
         .feedback { margin-top: 15px; font-weight: bold; font-size: 1.1rem; min-height: 1.5em; }
-        .correct { color: var(--success); }
-        .incorrect { color: var(--error); }
     </style>
 </head>
 <body>
@@ -43,24 +41,38 @@
 <div class="container" id="app-home">
     <h1>📚 Mis Flashcards</h1>
     <p>Biblioteca de <strong>Angy the teacher</strong></p>
-    <div id="loading">Cargando biblioteca cloud...</div>
+    <div id="loading">Conectando con la nube...</div>
     <div id="contenido-app" class="hidden">
         <h3>Temas disponibles:</h3>
         <div id="lista-mazos"></div>
-        <button id="btn-test" class="btn" onclick="iniciarTest()">Empezar Test</button>
+        <button id="btn-test" class="btn" onclick="iniciarTest()">Empezar Test del Tema</button>
     </div>
+</div>
+
+<div class="container hidden" id="visor-area">
+    <h3 id="visor-titulo"></h3>
+    <div class="card" onclick="voltearCarta()">
+        <div id="p-visor"></div>
+        <div id="r-visor" class="answer-text"></div>
+        <small style="margin-top:20px; color:#bbb;">(Toca para ver respuesta)</small>
+    </div>
+    <div style="display:flex; gap:10px;">
+        <button class="btn btn-secondary" onclick="navegarVisor(-1)">⬅️</button>
+        <button class="btn btn-secondary" onclick="navegarVisor(1)">➡️</button>
+    </div>
+    <button class="btn" style="background:#444;" onclick="location.reload()">Volver a la lista</button>
 </div>
 
 <div class="container hidden" id="test-area">
     <div id="test-progreso" style="font-weight:bold; color:var(--primary);"></div>
-    <div class="card" id="test-pregunta"></div>
+    <div class="card" id="test-pregunta" style="cursor:default;"></div>
     
     <div id="opciones-container"></div>
     
     <div id="escritura-container" class="hidden">
-        <input type="text" id="input-respuesta" placeholder="Escribe la respuesta aquí..." autocomplete="off">
+        <input type="text" id="input-respuesta" placeholder="Escribe aquí..." autocomplete="off">
         <div id="feedback-escritura" class="feedback"></div>
-        <button id="btn-comprobar" class="btn btn-check" onclick="comprobarEscritura()">Comprobar</button>
+        <button class="btn btn-check" onclick="comprobarEscritura()">Comprobar</button>
     </div>
 
     <button class="btn btn-secondary" onclick="location.reload()">Abandonar</button>
@@ -76,14 +88,13 @@
 
     window.onload = function() {
         Papa.parse(SHEETS_URL, {
-            download: true,
-            skipEmptyLines: true,
+            download: true, skipEmptyLines: true,
             complete: function(results) {
                 results.data.forEach(row => {
                     if (row.length >= 2) {
                         const mazoNombre = (row[2] || "General").trim();
                         if (!biblioteca[mazoNombre]) biblioteca[mazoNombre] = [];
-                        biblioteca[mazoNombre].push({ p: row[0].trim(), r: row[1].trim(), mazo: mazoNombre });
+                        biblioteca[mazoNombre].push({ p: row[0].trim(), r: row[1].trim() });
                     }
                 });
                 document.getElementById('loading').classList.add('hidden');
@@ -99,57 +110,79 @@
             const div = document.createElement('div');
             div.className = 'mazo-item';
             div.innerHTML = `
-                <label style="cursor:pointer; display:flex; align-items:center; gap:10px; width:100%">
-                    <input type="radio" name="mazo-selecc" value="${nombre}" style="transform: scale(1.5)">
-                    <span>${nombre} (${biblioteca[nombre].length})</span>
+                <label style="cursor:pointer; flex-grow:1; display:flex; align-items:center; gap:10px;">
+                    <input type="radio" name="mazo-selecc" value="${nombre}">
+                    <span>${nombre}</span>
                 </label>
+                <button class="btn btn-mini" onclick="abrirVisor('${nombre}')">Ver</button>
             `;
             lista.appendChild(div);
         });
     }
 
-    function iniciarTest() {
-        const seleccionado = document.querySelector('input[name="mazo-selecc"]:checked');
-        if (!seleccionado) return alert("Por favor, selecciona un tema.");
-
-        const nombreMazo = seleccionado.value;
-        mazoActual = [...biblioteca[nombreMazo]];
-        mazoActual.sort(() => Math.random() - 0.5);
-        
-        // ¿Es un mazo de verbos? (Buscamos la palabra "verbos" en el nombre)
-        modoEscritura = nombreMazo.toLowerCase().includes("verbos");
-        
+    // --- LÓGICA VISOR ---
+    function abrirVisor(nombre) {
+        mazoActual = biblioteca[nombre];
         currentIdx = 0;
         document.getElementById('app-home').classList.add('hidden');
-        document.getElementById('test-area').classList.remove('hidden');
-        mostrarPregunta();
+        document.getElementById('visor-area').classList.remove('hidden');
+        mostrarCartaVisor();
     }
 
-    function mostrarPregunta() {
+    function mostrarCartaVisor() {
+        document.getElementById('visor-titulo').innerText = `Repaso: ${currentIdx + 1} / ${mazoActual.length}`;
+        document.getElementById('p-visor').innerText = mazoActual[currentIdx].p;
+        document.getElementById('r-visor').innerText = mazoActual[currentIdx].r;
+        document.getElementById('r-visor').style.display = 'none';
+    }
+
+    function voltearCarta() {
+        const r = document.getElementById('r-visor');
+        r.style.display = (r.style.display === 'none') ? 'block' : 'none';
+    }
+
+    function navegarVisor(dir) {
+        currentIdx += dir;
+        if (currentIdx < 0) currentIdx = mazoActual.length - 1;
+        if (currentIdx >= mazoActual.length) currentIdx = 0;
+        mostrarCartaVisor();
+    }
+
+    // --- LÓGICA TEST ---
+    function iniciarTest() {
+        const selecc = document.querySelector('input[name="mazo-selecc"]:checked');
+        if (!selecc) return alert("Selecciona un tema para el test.");
+        
+        const nombre = selecc.value;
+        mazoActual = [...biblioteca[nombre]].sort(() => Math.random() - 0.5);
+        modoEscritura = nombre.toLowerCase().includes("verbos");
+        currentIdx = 0;
+
+        document.getElementById('app-home').classList.add('hidden');
+        document.getElementById('test-area').classList.remove('hidden');
+        mostrarPreguntaTest();
+    }
+
+    function mostrarPreguntaTest() {
         if (currentIdx >= mazoActual.length) {
-            alert("¡Muy bien! Has terminado el mazo.");
+            alert("¡Mazo completado!");
             return location.reload();
         }
-
         const item = mazoActual[currentIdx];
-        document.getElementById('test-progreso').innerText = `TARJETA ${currentIdx + 1} DE ${mazoActual.length}`;
+        document.getElementById('test-progreso').innerText = `Tarjeta ${currentIdx + 1} de ${mazoActual.length}`;
         document.getElementById('test-pregunta').innerText = item.p;
         
-        const optContainer = document.getElementById('opciones-container');
-        const escContainer = document.getElementById('escritura-container');
-        const feedback = document.getElementById('feedback-escritura');
-        const input = document.getElementById('input-respuesta');
-
-        feedback.innerText = "";
-        input.value = "";
+        const optCont = document.getElementById('opciones-container');
+        const escCont = document.getElementById('escritura-container');
+        document.getElementById('feedback-escritura').innerText = "";
+        document.getElementById('input-respuesta').value = "";
 
         if (modoEscritura) {
-            optContainer.classList.add('hidden');
-            escContainer.classList.remove('hidden');
-            input.focus();
+            optCont.classList.add('hidden');
+            escCont.classList.remove('hidden');
         } else {
-            escContainer.classList.add('hidden');
-            optContainer.classList.remove('hidden');
+            escCont.classList.add('hidden');
+            optCont.classList.remove('hidden');
             generarOpciones(item);
         }
     }
@@ -166,7 +199,7 @@
             const b = document.createElement('button');
             b.className = "btn"; b.style.background = "white"; b.style.color = "#333"; b.style.border = "2px solid #eee";
             b.innerText = opt;
-            b.onclick = () => { currentIdx++; mostrarPregunta(); };
+            b.onclick = () => { currentIdx++; mostrarPreguntaTest(); };
             container.appendChild(b);
         });
     }
@@ -174,21 +207,13 @@
     function comprobarEscritura() {
         const input = document.getElementById('input-respuesta').value.trim().toLowerCase();
         const correcta = mazoActual[currentIdx].r.trim().toLowerCase();
-        const feedback = document.getElementById('feedback-escritura');
-
+        const feed = document.getElementById('feedback-escritura');
         if (input === correcta) {
-            feedback.innerHTML = `<span class="correct">¡Correcto! ✨</span>`;
-            setTimeout(() => {
-                currentIdx++;
-                mostrarPregunta();
-            }, 1000);
+            feed.innerHTML = "<span style='color:green'>¡Perfecto!</span>";
+            setTimeout(() => { currentIdx++; mostrarPreguntaTest(); }, 1000);
         } else {
-            feedback.innerHTML = `<span class="incorrect">Casi... era: ${mazoActual[currentIdx].r}</span>`;
-            // Damos 2 segundos para que vean el error antes de pasar
-            setTimeout(() => {
-                currentIdx++;
-                mostrarPregunta();
-            }, 2500);
+            feed.innerHTML = `<span style='color:red'>Incorrecto. Era: ${mazoActual[currentIdx].r}</span>`;
+            setTimeout(() => { currentIdx++; mostrarPreguntaTest(); }, 2500);
         }
     }
 </script>
