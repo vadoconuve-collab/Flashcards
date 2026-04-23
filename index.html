@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Flashcards Angy the Teacher - Pro Cloud</title>
+    <title>Academia Angy the Teacher</title>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/PapaParse/5.3.2/papaparse.min.js"></script>
     <style>
         :root {
@@ -23,15 +23,19 @@
         .container { max-width: 600px; width: 100%; background: white; padding: 25px; border-radius: 20px; box-shadow: 0 10px 25px rgba(0,0,0,0.08); text-align: center; z-index: 1; }
         .hidden { display: none; }
         
+        /* Estilo para las secciones de alumnos */
+        .alumno-section { margin-top: 20px; text-align: left; border: 1px solid #ddd; border-radius: 12px; overflow: hidden; background: #fff; }
+        .alumno-header { background: #eee; padding: 15px; cursor: pointer; font-weight: bold; display: flex; justify-content: space-between; align-items: center; }
+        .alumno-content { padding: 10px; display: none; background: #fafafa; }
+        .alumno-content.active { display: block; }
+
         .btn { background: var(--primary); color: white; border: none; padding: 15px 24px; border-radius: 12px; cursor: pointer; font-weight: 600; width: 100%; margin-top: 15px; font-size: 1rem; transition: 0.2s; }
-        .btn-mini { width: auto; margin: 0; padding: 8px 15px; font-size: 0.9rem; background: var(--dark); }
+        .btn-mini { width: auto; margin: 0; padding: 8px 15px; font-size: 0.8rem; background: var(--dark); }
         .btn-secondary { background: #6c757d; margin-top: 10px; }
-        .btn-check { background: var(--success); }
         
-        .mazo-item { display: flex; align-items: center; justify-content: space-between; background: #f8f9fa; margin: 12px 0; padding: 15px; border-radius: 12px; border: 1px solid #e0e0e0; text-align: left; }
+        .mazo-item { display: flex; align-items: center; justify-content: space-between; background: white; margin: 8px 0; padding: 12px; border-radius: 10px; border: 1px solid #e0e0e0; }
         .card { font-size: 1.8rem; font-weight: bold; margin: 20px 0; padding: 40px 20px; border: 3px solid var(--primary); border-radius: 25px; background: #fff; min-height: 120px; display: flex; flex-direction: column; align-items: center; justify-content: center; box-shadow: 0 8px 20px rgba(0,0,0,0.05); cursor: pointer; }
-        
-        input[type="text"] { width: 100%; padding: 15px; font-size: 1.2rem; border-radius: 10px; border: 2px solid #ddd; text-align: center; box-sizing: border-box; outline: none; }
+        input[type="text"] { width: 100%; padding: 15px; font-size: 1.2rem; border-radius: 10px; border: 2px solid #ddd; text-align: center; box-sizing: border-box; }
         .answer-text { display: none; margin-top: 20px; color: var(--success); font-size: 1.4rem; border-top: 1px solid #eee; padding-top: 15px; width: 80%; }
         .feedback { margin-top: 15px; font-weight: bold; font-size: 1.1rem; min-height: 1.5em; }
     </style>
@@ -39,13 +43,12 @@
 <body>
 
 <div class="container" id="app-home">
-    <h1>📚 Mis Flashcards</h1>
-    <p>Biblioteca de <strong>Angy the teacher</strong></p>
-    <div id="loading">Conectando con la nube...</div>
+    <h1>🏫 Aula Virtual</h1>
+    <p>Por <strong>Angy the teacher</strong></p>
+    <div id="loading">Cargando alumnos...</div>
     <div id="contenido-app" class="hidden">
-        <h3>Temas disponibles:</h3>
-        <div id="lista-mazos"></div>
-        <button id="btn-test" class="btn" onclick="iniciarTest()">Empezar Test del Tema</button>
+        <p>Haz clic en tu nombre para ver tus mazos:</p>
+        <div id="lista-alumnos"></div>
     </div>
 </div>
 
@@ -60,28 +63,25 @@
         <button class="btn btn-secondary" onclick="navegarVisor(-1)">⬅️</button>
         <button class="btn btn-secondary" onclick="navegarVisor(1)">➡️</button>
     </div>
-    <button class="btn" style="background:#444;" onclick="location.reload()">Volver a la lista</button>
+    <button class="btn" style="background:#444;" onclick="location.reload()">Volver</button>
 </div>
 
 <div class="container hidden" id="test-area">
     <div id="test-progreso" style="font-weight:bold; color:var(--primary);"></div>
     <div class="card" id="test-pregunta" style="cursor:default;"></div>
-    
     <div id="opciones-container"></div>
-    
     <div id="escritura-container" class="hidden">
         <input type="text" id="input-respuesta" placeholder="Escribe aquí..." autocomplete="off">
         <div id="feedback-escritura" class="feedback"></div>
-        <button class="btn btn-check" onclick="comprobarEscritura()">Comprobar</button>
+        <button class="btn" style="background:var(--success)" onclick="comprobarEscritura()">Comprobar</button>
     </div>
-
     <button class="btn btn-secondary" onclick="location.reload()">Abandonar</button>
 </div>
 
 <script>
     const SHEETS_URL = "https://docs.google.com/spreadsheets/d/e/2PACX-1vThhYdCFgB1S2jQEhtXtyTaDh4NfNPa8XSkvPkIAvtr2No8Z1z3TYcCjxSqDT3kdnOSa2JMmnU8FP_1/pub?output=csv";
 
-    let biblioteca = {};
+    let datosAlumnos = {}; 
     let mazoActual = [];
     let currentIdx = 0;
     let modoEscritura = false;
@@ -92,37 +92,52 @@
             complete: function(results) {
                 results.data.forEach(row => {
                     if (row.length >= 2) {
-                        const mazoNombre = (row[2] || "General").trim();
-                        if (!biblioteca[mazoNombre]) biblioteca[mazoNombre] = [];
-                        biblioteca[mazoNombre].push({ p: row[0].trim(), r: row[1].trim() });
+                        const tema = (row[2] || "General").trim();
+                        const alumno = (row[3] || "Otros").trim();
+                        
+                        if (!datosAlumnos[alumno]) datosAlumnos[alumno] = {};
+                        if (!datosAlumnos[alumno][tema]) datosAlumnos[alumno][tema] = [];
+                        
+                        datosAlumnos[alumno][tema].push({ p: row[0].trim(), r: row[1].trim(), tema: tema });
                     }
                 });
                 document.getElementById('loading').classList.add('hidden');
                 document.getElementById('contenido-app').classList.remove('hidden');
-                renderLista();
+                renderAlumnos();
             }
         });
     };
 
-    function renderLista() {
-        const lista = document.getElementById('lista-mazos');
-        Object.keys(biblioteca).forEach(nombre => {
-            const div = document.createElement('div');
-            div.className = 'mazo-item';
-            div.innerHTML = `
-                <label style="cursor:pointer; flex-grow:1; display:flex; align-items:center; gap:10px;">
-                    <input type="radio" name="mazo-selecc" value="${nombre}">
-                    <span>${nombre}</span>
-                </label>
-                <button class="btn btn-mini" onclick="abrirVisor('${nombre}')">Ver</button>
+    function renderAlumnos() {
+        const lista = document.getElementById('lista-alumnos');
+        Object.keys(datosAlumnos).sort().forEach(alumno => {
+            const section = document.createElement('div');
+            section.className = 'alumno-section';
+            
+            let mazosHTML = '';
+            Object.keys(datosAlumnos[alumno]).forEach(tema => {
+                mazosHTML += `
+                    <div class="mazo-item">
+                        <span>${tema} (${datosAlumnos[alumno][tema].length})</span>
+                        <div style="display:flex; gap:5px;">
+                            <button class="btn btn-mini" onclick="abrirVisor('${alumno}', '${tema}')">Ver</button>
+                            <button class="btn btn-mini" style="background:var(--primary)" onclick="iniciarTest('${alumno}', '${tema}')">Test</button>
+                        </div>
+                    </div>`;
+            });
+
+            section.innerHTML = `
+                <div class="alumno-header" onclick="this.nextElementSibling.classList.toggle('active')">
+                    👤 ${alumno} <span>▼</span>
+                </div>
+                <div class="alumno-content">${mazosHTML}</div>
             `;
-            lista.appendChild(div);
+            lista.appendChild(section);
         });
     }
 
-    // --- LÓGICA VISOR ---
-    function abrirVisor(nombre) {
-        mazoActual = biblioteca[nombre];
+    function abrirVisor(alumno, tema) {
+        mazoActual = datosAlumnos[alumno][tema];
         currentIdx = 0;
         document.getElementById('app-home').classList.add('hidden');
         document.getElementById('visor-area').classList.remove('hidden');
@@ -148,16 +163,10 @@
         mostrarCartaVisor();
     }
 
-    // --- LÓGICA TEST ---
-    function iniciarTest() {
-        const selecc = document.querySelector('input[name="mazo-selecc"]:checked');
-        if (!selecc) return alert("Selecciona un tema para el test.");
-        
-        const nombre = selecc.value;
-        mazoActual = [...biblioteca[nombre]].sort(() => Math.random() - 0.5);
-        modoEscritura = nombre.toLowerCase().includes("verbos");
+    function iniciarTest(alumno, tema) {
+        mazoActual = [...datosAlumnos[alumno][tema]].sort(() => Math.random() - 0.5);
+        modoEscritura = tema.toLowerCase().includes("verbos");
         currentIdx = 0;
-
         document.getElementById('app-home').classList.add('hidden');
         document.getElementById('test-area').classList.remove('hidden');
         mostrarPreguntaTest();
@@ -165,7 +174,7 @@
 
     function mostrarPreguntaTest() {
         if (currentIdx >= mazoActual.length) {
-            alert("¡Mazo completado!");
+            alert("¡Buen trabajo! Test terminado.");
             return location.reload();
         }
         const item = mazoActual[currentIdx];
@@ -191,8 +200,8 @@
         const container = document.getElementById('opciones-container');
         container.innerHTML = "";
         let opciones = [item.r];
-        let todas = Object.values(biblioteca).flat().map(x => x.r);
-        let incorrectas = todas.filter(r => r !== item.r).sort(() => Math.random() - 0.5);
+        let todas = Object.values(datosAlumnos).map(a => Object.values(a)).flat(2).map(x => x.r);
+        let incorrectas = [...new Set(todas.filter(r => r !== item.r))].sort(() => Math.random() - 0.5);
         opciones = [...opciones, ...incorrectas.slice(0, 3)].sort(() => Math.random() - 0.5);
 
         opciones.forEach(opt => {
@@ -209,12 +218,19 @@
         const correcta = mazoActual[currentIdx].r.trim().toLowerCase();
         const feed = document.getElementById('feedback-escritura');
         if (input === correcta) {
-            feed.innerHTML = "<span style='color:green'>¡Perfecto!</span>";
-            setTimeout(() => { currentIdx++; mostrarPreguntaTest(); }, 1000);
+            feed.innerHTML = "<span style='color:green'>¡Correcto! ✨</span>";
+            setTimeout(() => { currentIdx++; mostrarPreguntaTest(); }, 800);
         } else {
             feed.innerHTML = `<span style='color:red'>Incorrecto. Era: ${mazoActual[currentIdx].r}</span>`;
-            setTimeout(() => { currentIdx++; mostrarPreguntaTest(); }, 2500);
+            setTimeout(() => { currentIdx++; mostrarPreguntaTest(); }, 2000);
         }
+    }
+
+    function navegarVisor(dir) {
+        currentIdx += dir;
+        if (currentIdx < 0) currentIdx = mazoActual.length - 1;
+        if (currentIdx >= mazoActual.length) currentIdx = 0;
+        mostrarCartaVisor();
     }
 </script>
 </body>
