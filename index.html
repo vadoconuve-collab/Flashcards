@@ -2,66 +2,230 @@
 <html lang="es">
 <head>
     <meta charset="UTF-8">
-    <title>Aula Virtual Angy - Acceso Seguro</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Aula Virtual - Angy the teacher</title>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/PapaParse/5.3.2/papaparse.min.js"></script>
     <style>
-        :root { --primary: #4a90e2; --bg: #f4f7f6; }
-        body { font-family: sans-serif; background: var(--bg); display: flex; flex-direction: column; align-items: center; padding: 20px; }
-        .container { max-width: 600px; width: 100%; background: white; padding: 25px; border-radius: 20px; box-shadow: 0 4px 10px rgba(0,0,0,0.1); text-align: center; }
-        .input-login { width: 80%; padding: 15px; margin: 10px 0; border: 2px solid #ddd; border-radius: 10px; font-size: 1rem; }
-        .btn { background: var(--primary); color: white; border: none; padding: 15px 25px; border-radius: 10px; cursor: pointer; font-weight: bold; width: 100%; }
-        .mazo-item { display: flex; justify-content: space-between; padding: 12px; border-bottom: 1px solid #eee; align-items: center; }
+        :root {
+            --nombre-profe: "Angy the teacher";
+            --primary: #4a90e2; --success: #2ecc71; --error: #e74c3c; --bg: #f4f7f6; --dark: #2c3e50;
+        }
+
+        /* Marca de agua de autor */
+        body::before {
+            content: var(--nombre-profe);
+            position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%);
+            z-index: -1; font-family: 'Great Vibes', cursive; font-size: 7rem;
+            color: rgba(74, 144, 226, 0.015); width: 95vw; text-align: center; white-space: nowrap; pointer-events: none;
+        }
+        @import url('https://fonts.googleapis.com/css2?family=Great+Vibes&display=swap');
+
+        body { font-family: 'Segoe UI', sans-serif; background: var(--bg); color: var(--dark); margin: 0; padding: 20px; display: flex; flex-direction: column; align-items: center; min-height: 100vh; }
+        .container { max-width: 600px; width: 100%; background: white; padding: 25px; border-radius: 20px; box-shadow: 0 10px 25px rgba(0,0,0,0.08); text-align: center; z-index: 1; }
+        .hidden { display: none; }
+        
+        /* Login */
+        .login-input { width: 100%; padding: 15px; margin: 10px 0; border-radius: 12px; border: 2px solid #eee; font-size: 1rem; box-sizing: border-box; }
+        
+        /* Botones */
+        .btn { background: var(--primary); color: white; border: none; padding: 15px 24px; border-radius: 12px; cursor: pointer; font-weight: 600; width: 100%; margin-top: 10px; font-size: 1rem; }
+        .btn-mini { width: auto; margin: 0; padding: 8px 12px; font-size: 0.8rem; background: var(--dark); }
+        .btn-secondary { background: #6c757d; }
+
+        .mazo-item { display: flex; align-items: center; justify-content: space-between; background: #f8f9fa; margin: 12px 0; padding: 15px; border-radius: 12px; border: 1px solid #e0e0e0; text-align: left; }
+        .card { font-size: 1.8rem; font-weight: bold; margin: 20px 0; padding: 40px 20px; border: 3px solid var(--primary); border-radius: 25px; background: #fff; min-height: 120px; display: flex; flex-direction: column; align-items: center; justify-content: center; box-shadow: 0 8px 20px rgba(0,0,0,0.05); cursor: pointer; }
+        .answer-text { display: none; margin-top: 20px; color: var(--success); font-size: 1.4rem; border-top: 1px solid #eee; padding-top: 15px; width: 80%; }
+        .feedback { margin-top: 15px; font-weight: bold; min-height: 1.5em; }
     </style>
 </head>
 <body>
 
-<div class="container" id="login-area">
-    <h1>🔑 Acceso al Aula</h1>
-    <input type="text" id="nombre-input" class="input-login" placeholder="Tu nombre">
-    <input type="password" id="pass-input" class="input-login" placeholder="Tu contraseña">
-    <button class="btn" onclick="validarLogin()">Entrar</button>
+<div class="container" id="section-login">
+    <h1>🔑 Aula Virtual</h1>
+    <p>Identifícate para ver tus tareas</p>
+    <input type="text" id="user-name" class="login-input" placeholder="Tu nombre">
+    <input type="password" id="user-pass" class="login-input" placeholder="Tu contraseña">
+    <button class="btn" onclick="intentarLogin()">Entrar</button>
 </div>
 
-<div class="container hidden" id="app-area">
-    <h1 id="welcome-msg"></h1>
+<div class="container hidden" id="section-app">
+    <h2 id="welcome-title"></h2>
     <div id="lista-mazos"></div>
-    <button class="btn" style="background:#6c757d; margin-top:20px;" onclick="location.reload()">Cerrar Sesión</button>
+    <button class="btn btn-secondary" onclick="location.reload()">Cerrar Sesión</button>
+</div>
+
+<div class="container hidden" id="section-visor">
+    <h3 id="visor-tema"></h3>
+    <div class="card" onclick="document.getElementById('r-visor').style.display='block'">
+        <div id="p-visor"></div>
+        <div id="r-visor" class="answer-text"></div>
+        <small style="margin-top:20px; color:#bbb;">(Toca para ver respuesta)</small>
+    </div>
+    <div style="display:flex; gap:10px;">
+        <button class="btn btn-secondary" onclick="navegarVisor(-1)">⬅️</button>
+        <button class="btn btn-secondary" onclick="navegarVisor(1)">➡️</button>
+    </div>
+    <button class="btn" style="background:#444;" onclick="volverAlMenu()">Volver al menú</button>
+</div>
+
+<div class="container hidden" id="section-test">
+    <div id="test-progreso" style="font-weight:bold; color:var(--primary);"></div>
+    <div class="card" id="test-pregunta" style="cursor:default;"></div>
+    <div id="opciones-container"></div>
+    <div id="escritura-container" class="hidden">
+        <input type="text" id="input-escritura" class="login-input" style="text-align:center" placeholder="Escribe aquí...">
+        <div id="feedback-test" class="feedback"></div>
+        <button class="btn" style="background:var(--success)" onclick="comprobarEscritura()">Comprobar</button>
+    </div>
+    <button class="btn btn-secondary" onclick="volverAlMenu()">Abandonar</button>
 </div>
 
 <script>
     const SHEETS_URL = "https://docs.google.com/spreadsheets/d/e/2PACX-1vThhYdCFgB1S2jQEhtXtyTaDh4NfNPa8XSkvPkIAvtr2No8Z1z3TYcCjxSqDT3kdnOSa2JMmnU8FP_1/pub?output=csv";
-    let datosCompletos = [];
 
+    let database = [];
+    let misTemas = {};
+    let mazoActual = [];
+    let currentIdx = 0;
+    let esModoEscritura = false;
+
+    // Cargar datos al inicio
     window.onload = () => {
-        Papa.parse(SHEETS_URL, { download: true, complete: (res) => { datosCompletos = res.data; } });
+        Papa.parse(SHEETS_URL, {
+            download: true,
+            skipEmptyLines: true,
+            complete: (results) => { database = results.data; }
+        });
     };
 
-    function validarLogin() {
-        const nombre = document.getElementById('nombre-input').value.trim();
-        const pass = document.getElementById('pass-input').value.trim();
+    function intentarLogin() {
+        const user = document.getElementById('user-name').value.trim().toLowerCase();
+        const pass = document.getElementById('user-pass').value.trim();
         
-        // Buscamos si existe alguien con ese nombre y contraseña en el CSV
-        const usuarioValido = datosCompletos.find(r => r[3]?.trim() === nombre && r[4]?.trim() === pass);
+        // Buscamos al alumno (Columna D=3, Columna E=4)
+        const filasAlumno = database.filter(r => r[3] && r[3].trim().toLowerCase() === user && r[4] && r[4].trim() === pass);
 
-        if (usuarioValido) {
-            document.getElementById('login-area').classList.add('hidden');
-            document.getElementById('app-area').classList.remove('hidden');
-            document.getElementById('welcome-msg').innerText = "Hola, " + nombre;
-            mostrarMazos(nombre);
+        if (filasAlumno.length > 0) {
+            document.getElementById('section-login').classList.add('hidden');
+            document.getElementById('section-app').classList.remove('hidden');
+            document.getElementById('welcome-title').innerText = "Hola, " + filasAlumno[0][3];
+            
+            // Organizar temas
+            misTemas = {};
+            filasAlumno.forEach(f => {
+                const tema = (f[2] || "General").trim();
+                if (!misTemas[tema]) misTemas[tema] = [];
+                misTemas[tema].push({ p: f[0], r: f[1] });
+            });
+            renderizarMenu();
         } else {
-            alert("Nombre o contraseña incorrectos.");
+            alert("Acceso denegado. Revisa tu nombre y contraseña.");
         }
     }
 
-    function mostrarMazos(nombre) {
+    function renderizarMenu() {
         const lista = document.getElementById('lista-mazos');
-        // Filtramos solo lo de este alumno
-        const misDatos = datosCompletos.filter(r => r[3]?.trim() === nombre);
-        const temas = [...new Set(misDatos.map(r => r[2]))];
-        
-        temas.forEach(tema => {
-            lista.innerHTML += `<div class="mazo-item"><span>${tema}</span><button class="btn" style="width:auto">Abrir</button></div>`;
+        lista.innerHTML = ""; // LIMPIAR para evitar duplicados
+        Object.keys(misTemas).forEach(tema => {
+            const div = document.createElement('div');
+            div.className = 'mazo-item';
+            div.innerHTML = `
+                <span><strong>${tema}</strong> (${misTemas[tema].length})</span>
+                <div style="display:flex; gap:5px;">
+                    <button class="btn btn-mini" onclick="abrirVisor('${tema}')">Ver</button>
+                    <button class="btn btn-mini" style="background:var(--primary)" onclick="abrirTest('${tema}')">Test</button>
+                </div>`;
+            lista.appendChild(div);
         });
+    }
+
+    function volverAlMenu() {
+        document.querySelectorAll('.container').forEach(c => c.classList.add('hidden'));
+        document.getElementById('section-app').classList.remove('hidden');
+    }
+
+    // --- VISOR ---
+    function abrirVisor(tema) {
+        mazoActual = misTemas[tema];
+        currentIdx = 0;
+        document.getElementById('section-app').classList.add('hidden');
+        document.getElementById('section-visor').classList.remove('hidden');
+        document.getElementById('visor-tema').innerText = tema;
+        mostrarCartaVisor();
+    }
+
+    function mostrarCartaVisor() {
+        document.getElementById('p-visor').innerText = mazoActual[currentIdx].p;
+        document.getElementById('r-visor').innerText = mazoActual[currentIdx].r;
+        document.getElementById('r-visor').style.display = 'none';
+    }
+
+    function navegarVisor(dir) {
+        currentIdx = (currentIdx + dir + mazoActual.length) % mazoActual.length;
+        mostrarCartaVisor();
+    }
+
+    // --- TEST ---
+    function abrirTest(tema) {
+        mazoActual = [...misTemas[tema]].sort(() => Math.random() - 0.5);
+        currentIdx = 0;
+        esModoEscritura = tema.toLowerCase().includes("verbos");
+        document.getElementById('section-app').classList.add('hidden');
+        document.getElementById('section-test').classList.remove('hidden');
+        mostrarPreguntaTest();
+    }
+
+    function mostrarPreguntaTest() {
+        if (currentIdx >= mazoActual.length) {
+            alert("¡Terminado!"); return volverAlMenu();
+        }
+        const item = mazoActual[currentIdx];
+        document.getElementById('test-progreso').innerText = `Pregunta ${currentIdx + 1} de ${mazoActual.length}`;
+        document.getElementById('test-pregunta').innerText = item.p;
+        
+        const optCont = document.getElementById('opciones-container');
+        const escCont = document.getElementById('escritura-container');
+        document.getElementById('feedback-test').innerText = "";
+        document.getElementById('input-escritura').value = "";
+
+        if (esModoEscritura) {
+            optCont.classList.add('hidden');
+            escCont.classList.remove('hidden');
+        } else {
+            escCont.classList.add('hidden');
+            optCont.classList.remove('hidden');
+            generarOpciones(item);
+        }
+    }
+
+    function generarOpciones(item) {
+        const container = document.getElementById('opciones-container');
+        container.innerHTML = "";
+        let opciones = [item.r];
+        let todas = database.map(f => f[1]); // Cogemos respuestas de toda la base
+        let incorrectas = [...new Set(todas.filter(r => r !== item.r))].sort(() => Math.random() - 0.5);
+        opciones = [...opciones, ...incorrectas.slice(0, 3)].sort(() => Math.random() - 0.5);
+
+        opciones.forEach(opt => {
+            const b = document.createElement('button');
+            b.className = "btn"; b.style.background = "white"; b.style.color = "#333"; b.style.border = "1px solid #ddd";
+            b.innerText = opt;
+            b.onclick = () => { currentIdx++; mostrarPreguntaTest(); };
+            container.appendChild(b);
+        });
+    }
+
+    function comprobarEscritura() {
+        const input = document.getElementById('input-escritura').value.trim().toLowerCase();
+        const correcta = mazoActual[currentIdx].r.trim().toLowerCase();
+        const f = document.getElementById('feedback-test');
+        if (input === correcta) {
+            f.innerHTML = "<span style='color:green'>¡Correcto!</span>";
+            setTimeout(() => { currentIdx++; mostrarPreguntaTest(); }, 800);
+        } else {
+            f.innerHTML = `<span style='color:red'>No. Era: ${mazoActual[currentIdx].r}</span>`;
+            setTimeout(() => { currentIdx++; mostrarPreguntaTest(); }, 2000);
+        }
     }
 </script>
 </body>
