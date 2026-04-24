@@ -6,634 +6,232 @@
     <title>Aula Virtual - Angy the teacher</title>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/PapaParse/5.3.2/papaparse.min.js"></script>
     <style>
-        /* =========================================
-           CONFIGURACIÓN VISUAL (Colores y Estilo)
-           ========================================= */
         :root {
             --nombre-profe: "Angy the teacher";
-            
-            /* Paleta Modernizada */
-            --primary: #5cace2;       /* Azul Suave Pastel */
-            --primary-dark: #4a90e2;  /* Azul más intenso para hover */
-            --secondary: #ffb74d;     /* Naranja Suave para Test */
-            --secondary-dark: #f5a623;
-            
-            --success: #66bb6a;       /* Verde Suave */
-            --error: #ef5350;         /* Rojo Suave */
-            --bg: #f0f4f8;            /* Gris muy azulado sutil */
-            --dark: #37474f;          /* Gris azulado oscuro para texto */
-            --shadow: 0 10px 30px rgba(0,0,0,0.05); /* Sombra suave y profunda */
-            --shadow-hover: 0 15px 35px rgba(92, 172, 226, 0.1); /* Sombra con color al pasar ratón */
+            --primary: #5cace2; --secondary: #ffb74d; --video-color: #ef5350; --read-color: #66bb6a;
+            --bg: #f0f4f8; --dark: #37474f; --shadow: 0 10px 30px rgba(0,0,0,0.05);
         }
 
-        /* =========================================
-           EFECTO DE MARCA DE AGUA (WATERMARK GIGANTE)
-           ========================================= */
+        /* Marca de agua */
         body::before {
-            content: var(--nombre-profe);
-            position: fixed;
-            top: 50%; left: 50%;
-            transform: translate(-50%, -50%);
-            z-index: -1;
-            font-family: 'Great Vibes', cursive, 'Dancing Script', serif; 
-            font-size: calc(6rem + 5vw); /* Tamaño dinámico gigante */
-            font-weight: 300;
-            color: rgba(92, 172, 226, 1.8); /* Azul sutilísimo */
-            width: 95vw;
-            text-align: center;
-            white-space: nowrap;
-            pointer-events: none;
-            overflow: hidden;
-            text-shadow: 2px 2px 4px rgba(255, 255, 255, 0.8); /* Efecto relieve sutil */
+            content: var(--nombre-profe); position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%);
+            z-index: -1; font-family: 'Great Vibes', cursive; font-size: calc(5rem + 5vw);
+            color: rgba(92, 172, 226, 0.02); width: 95vw; text-align: center; pointer-events: none;
         }
 
-        /* Importar Fuentes Bonitas */
         @import url('https://fonts.googleapis.com/css2?family=Great+Vibes&family=Poppins:wght@400;600&display=swap');
 
-        /* =========================================
-           ESTILOS GENERALES Y CONTENEDOR
-           ========================================= */
-        body { 
-            font-family: 'Poppins', sans-serif; /* Tipografía más moderna y limpia */
-            background-color: var(--bg); 
-            color: var(--dark); 
-            margin: 0; 
-            padding: 20px; 
-            display: flex; 
-            flex-direction: column; 
-            align-items: center; 
-            min-height: 100vh;
-            -webkit-font-smoothing: antialiased; /* Suavizar fuentes en Mac */
-        }
-
-        .container { 
-            max-width: 600px; 
-            width: 100%; 
-            background: white; 
-            padding: 30px; 
-            border-radius: 30px; /* Esquinas muy redondeadas */
-            box-shadow: var(--shadow); 
-            text-align: center; 
-            z-index: 1; 
-            position: relative;
-            box-sizing: border-box;
-            transition: transform 0.3s ease, box-shadow 0.3s ease;
-        }
-        
-        .container:hover {
-            transform: translateY(-5px); /* Pequeño levante al pasar el ratón */
-            box-shadow: var(--shadow-hover);
-        }
-
+        body { font-family: 'Poppins', sans-serif; background-color: var(--bg); color: var(--dark); margin: 0; padding: 15px; display: flex; flex-direction: column; align-items: center; min-height: 100vh; }
+        .container { max-width: 650px; width: 100%; background: white; padding: 25px; border-radius: 30px; box-shadow: var(--shadow); text-align: center; z-index: 1; box-sizing: border-box; }
         .hidden { display: none; }
         
-        h1, h2, h3 { 
-            margin-top: 0; 
-            font-weight: 600; 
-            color: var(--dark); 
-            letter-spacing: -0.5px;
-        }
+        /* Login */
+        .login-input { width: 100%; padding: 15px; margin: 10px 0; border-radius: 15px; border: 2px solid #f0f4f8; background: #f9fbfd; font-size: 1rem; box-sizing: border-box; }
+        .btn { background: var(--primary); color: white; border: none; padding: 15px; border-radius: 15px; cursor: pointer; font-weight: 600; width: 100%; margin-top: 10px; font-size: 1rem; transition: 0.2s; }
         
-        h1 { font-size: 2.2rem; margin-bottom: 10px; }
-        h2 { font-size: 1.6rem; color: var(--primary); }
-        h3 { font-size: 1.2rem; margin-bottom: 15px; }
-        
-        p.subtitle {
-            color: #78909c;
-            margin-bottom: 30px;
-            font-size: 0.9rem;
-        }
+        /* Menú de Pestañas */
+        .tabs { display: flex; gap: 10px; margin-bottom: 20px; flex-wrap: wrap; }
+        .tab-btn { flex: 1; padding: 12px; border-radius: 12px; border: none; background: #e0e7ee; cursor: pointer; font-weight: 600; color: #78909c; transition: 0.3s; }
+        .tab-btn.active { background: var(--primary); color: white; box-shadow: 0 4px 10px rgba(92, 172, 226, 0.3); }
 
-        /* =========================================
-           ESTILOS DE LOGIN Y FORMULARIOS
-           ========================================= */
-        .login-input { 
-            width: 100%; 
-            padding: 18px; 
-            margin: 12px 0; 
-            border-radius: 15px; 
-            border: 2px solid transparent; 
-            background-color: #f0f4f8; /* Fondo sutil para inputs */
-            font-size: 1rem; 
-            font-family: 'Poppins', sans-serif;
-            box-sizing: border-box; 
-            transition: all 0.2s ease;
-            color: var(--dark);
-        }
-        
-        .login-input:focus { 
-            outline: none; 
-            border-color: var(--primary); 
-            background-color: white;
-            box-shadow: 0 0 10px rgba(92, 172, 226, 0.1);
-        }
-        
-        .login-input::placeholder {
-            color: #b0bec5;
-        }
+        /* Estilo de los Recursos */
+        .recurso-card { display: flex; align-items: center; justify-content: space-between; background: #fff; border: 1px solid #f0f4f8; padding: 15px; border-radius: 20px; margin-bottom: 12px; text-align: left; transition: 0.3s; }
+        .recurso-card:hover { transform: translateY(-3px); box-shadow: 0 5px 15px rgba(0,0,0,0.05); }
+        .recurso-info h4 { margin: 0; font-size: 1rem; color: var(--dark); }
+        .recurso-info span { font-size: 0.8rem; color: #90a4ae; }
+        .btn-action { padding: 8px 15px; border-radius: 10px; border: none; color: white; cursor: pointer; font-weight: 600; font-size: 0.8rem; }
 
-        /* =========================================
-           BOTONES ATRACTIVOS Y ANIMADOS
-           ========================================= */
-        .btn { 
-            background-color: var(--primary); 
-            color: white; 
-            border: none; 
-            padding: 16px 28px; 
-            border-radius: 15px; 
-            cursor: pointer; 
-            font-weight: 600; 
-            font-family: 'Poppins', sans-serif;
-            width: 100%; 
-            margin-top: 15px; 
-            font-size: 1rem; 
-            transition: all 0.2s ease;
-            box-shadow: 0 4px 6px rgba(92, 172, 226, 0.15);
-            -webkit-appearance: none; /* Quitar estilos nativos móviles */
-        }
-        
-        .btn:hover { 
-            background-color: var(--primary-dark); 
-            transform: translateY(-2px);
-            box-shadow: 0 6px 12px rgba(92, 172, 226, 0.2);
-        }
-        
-        .btn:active { 
-            transform: translateY(1px); 
-            box-shadow: 0 2px 4px rgba(92, 172, 226, 0.15);
-        }
+        /* Estilo de Vídeos Empotrados */
+        .video-container { position: relative; padding-bottom: 56.25%; height: 0; overflow: hidden; border-radius: 15px; margin-top: 10px; }
+        .video-container iframe { position: absolute; top: 0; left: 0; width: 100%; height: 100%; border: none; }
 
-        .btn-secondary { 
-            background-color: #90a4ae; /* Gris azulado suave */
-            box-shadow: 0 4px 6px rgba(144, 164, 174, 0.15);
-        }
-        
-        .btn-secondary:hover {
-            background-color: #78909c;
-            box-shadow: 0 6px 12px rgba(144, 164, 174, 0.2);
-        }
-
-        .btn-test {
-            background-color: var(--secondary);
-            box-shadow: 0 4px 6px rgba(255, 183, 77, 0.15);
-        }
-        
-        .btn-test:hover {
-            background-color: var(--secondary-dark);
-            box-shadow: 0 6px 12px rgba(255, 183, 77, 0.2);
-        }
-
-        .btn-mini { 
-            width: auto; 
-            margin: 0; 
-            padding: 10px 18px; 
-            font-size: 0.85rem; 
-            background-color: #cfd8dc; /* Gris muy suave */
-            color: var(--dark);
-            box-shadow: none;
-            border-radius: 10px;
-        }
-        
-        .btn-mini:hover {
-            background-color: #b0bec5;
-            color: white;
-        }
-
-        /* =========================================
-           ESTILOS DE LA BIBLIOTECA DE MAZOS
-           ========================================= */
-        .lista-mazos-container {
-            margin-top: 20px;
-            margin-bottom: 30px;
-        }
-
-        .mazo-item { 
-            display: flex; 
-            align-items: center; 
-            justify-content: space-between; 
-            background-color: white; 
-            margin: 15px 0; 
-            padding: 20px; 
-            border-radius: 20px; 
-            border: 1px solid #f0f4f8; 
-            text-align: left; 
-            transition: all 0.3s ease;
-        }
-        
-        .mazo-item:hover {
-            border-color: rgba(92, 172, 226, 0.1);
-            transform: translateX(3px);
-            box-shadow: 0 5px 15px rgba(0,0,0,0.02);
-        }
-        
-        .mazo-info {
-            display: flex;
-            flex-direction: column;
-        }
-        
-        .mazo-tema {
-            font-weight: 600;
-            font-size: 1.1rem;
-            color: var(--dark);
-        }
-        
-        .mazo-conteo {
-            font-size: 0.85rem;
-            color: #90a4ae;
-        }
-        
-        .mazo-acciones {
-            display: flex; 
-            gap: 8px;
-        }
-
-        /* =========================================
-           ESTILOS DE LAS TARJETAS (VISOR Y TEST)
-           ========================================= */
-        .card { 
-            font-size: 2rem; 
-            font-weight: 600; 
-            margin: 30px 0; 
-            padding: 60px 25px; 
-            border: none; /* Sin borde, solo sombra */
-            border-radius: 25px; 
-            background: white; 
-            min-height: 160px; 
-            display: flex; 
-            flex-direction: column; 
-            align-items: center; 
-            justify-content: center; 
-            box-shadow: 0 15px 40px rgba(0,0,0,0.06); 
-            cursor: pointer; 
-            position: relative;
-            box-sizing: border-box;
-            transition: transform 0.2s ease, box-shadow 0.2s ease;
-        }
-        
-        .card::before {
-            content: '';
-            position: absolute;
-            top: 0; left: 0; width: 100%; height: 6px;
-            background-color: var(--primary);
-            border-radius: 25px 25px 0 0;
-        }
-        
-        .card:hover {
-            transform: scale(1.01);
-            box-shadow: 0 20px 45px rgba(92, 172, 226, 0.08);
-        }
-        
-        .question-text {
-            color: var(--dark);
-            letter-spacing: -1px;
-        }
-
-        .answer-text { 
-            display: none; 
-            margin-top: 30px; 
-            color: var(--success); 
-            font-size: 1.6rem; 
-            border-top: 1px solid #f0f4f8; 
-            padding-top: 25px; 
-            width: 90%; 
-            font-weight: 400;
-        }
-        
-        /* Opciones del Test */
-        #opciones-container {
-            display: grid;
-            grid-template-columns: 1fr 1fr; /* Dos columnas */
-            gap: 15px;
-            margin-top: 25px;
-        }
-        
-        .option-btn {
-            background-color: white; 
-            color: var(--dark); 
-            border: 2px solid #f0f4f8; 
-            padding: 20px; 
-            border-radius: 18px; 
-            cursor: pointer; 
-            font-weight: 400; 
-            font-family: 'Poppins', sans-serif;
-            font-size: 1rem; 
-            transition: all 0.2s ease;
-            box-sizing: border-box;
-        }
-        
-        .option-btn:hover {
-            border-color: var(--primary);
-            background-color: #f8fbfd;
-            transform: translateY(-2px);
-            color: var(--primary);
-        }
-        
-        .option-btn:active {
-            transform: translateY(1px);
-        }
-        
-        /* Feedback Visual */
-        .feedback { 
-            margin-top: 20px; 
-            font-weight: 600; 
-            font-size: 1.1rem;
-            min-height: 1.6em; 
-            border-radius: 10px;
-            padding: 10px;
-            transition: all 0.3s ease;
-        }
-        
-        .feedback-correct {
-            background-color: rgba(102, 187, 106, 0.1);
-            color: var(--success);
-        }
-        
-        .feedback-incorrect {
-            background-color: rgba(239, 83, 80, 0.1);
-            color: var(--error);
-        }
-
-        #test-progreso { 
-            font-size: 0.9rem;
-            font-weight: 600; 
-            color: var(--primary); 
-            background-color: #f8fbfd;
-            padding: 8px 15px;
-            border-radius: 20px;
-            display: inline-block;
-            margin-bottom: 10px;
-        }
-        
-        /* Carga Sutil */
-        #loading { 
-            font-style: italic; 
-            color: #b0bec5; 
-            margin: 30px; 
-            font-size: 1.1rem;
-        }
-        
-        #loading::after {
-            content: '...';
-            animation: dots 1.5s steps(5, end) infinite;
-        }
-        
-        @keyframes dots {
-            0%, 20% { color: rgba(0,0,0,0); text-shadow: .25em 0 0 rgba(0,0,0,0), .5em 0 0 rgba(0,0,0,0); }
-            40% { color: #b0bec5; text-shadow: .25em 0 0 rgba(0,0,0,0), .5em 0 0 rgba(0,0,0,0); }
-            60% { text-shadow: .25em 0 0 #b0bec5, .5em 0 0 rgba(0,0,0,0); }
-            80%, 100% { text-shadow: .25em 0 0 #b0bec5, .5em 0 0 #b0bec5; }
-        }
-
+        .card { font-size: 1.8rem; font-weight: 600; margin: 20px 0; padding: 50px 20px; border-radius: 25px; background: white; box-shadow: 0 10px 30px rgba(0,0,0,0.05); cursor: pointer; }
+        .answer-text { display: none; margin-top: 20px; color: var(--read-color); font-size: 1.4rem; border-top: 1px solid #eee; padding-top: 20px; }
+        .option-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-top: 20px; }
     </style>
 </head>
 <body>
 
 <div class="container" id="section-login">
     <h1>🔑 Aula Virtual</h1>
-    <p class="subtitle">Identifícate, por favor, para ver tus flashcards personalizadas.</p>
-    <input type="text" id="user-name" class="login-input" placeholder="Tu nombre de alumno">
+    <p style="color:#78909c">Bienvenido al centro de recursos de Angy</p>
+    <input type="text" id="user-name" class="login-input" placeholder="Tu nombre">
     <input type="password" id="user-pass" class="login-input" placeholder="Tu contraseña">
-    <button class="btn" onclick="intentarLogin()">Entrar Segura/o</button>
+    <button class="btn" onclick="intentarLogin()">Acceder</button>
 </div>
 
 <div class="container hidden" id="section-app">
-    <h1 style="color:var(--dark)">Mis Tareas</h1>
-    <h2 id="welcome-title"></h2>
-    <p class="subtitle">Aquí tienes tus temas actuales. ¡Mucha suerte con el estudio!</p>
+    <h2 id="welcome-title" style="margin-bottom:5px"></h2>
+    <p id="current-date" style="font-size:0.8rem; color:#90a4ae; margin-bottom:20px"></p>
     
-    <div id="lista-mazos" class="lista-mazos-container">
-        </div>
+    <div class="tabs">
+        <button class="tab-btn active" onclick="cambiarTab('flashcards', this)">🎴 Flashcards</button>
+        <button class="tab-btn" onclick="cambiarTab('lecturas', this)">📖 Lecturas</button>
+        <button class="tab-btn" onclick="cambiarTab('videos', this)">🎥 Vídeos</button>
+    </div>
+
+    <div id="tab-flashcards" class="tab-content"></div>
     
-    <button class="btn btn-secondary" onclick="location.reload()">Cerrar Sesión de Angy</button>
+    <div id="tab-lecturas" class="tab-content hidden"></div>
+    
+    <div id="tab-videos" class="tab-content hidden"></div>
+
+    <button class="btn" style="background:#90a4ae; margin-top:30px" onclick="location.reload()">Cerrar Sesión</button>
 </div>
 
 <div class="container hidden" id="section-visor">
-    <p class="subtitle" style="margin-bottom:10px">Modo Repaso Activo</p>
     <h3 id="visor-tema"></h3>
-    
     <div class="card" onclick="document.getElementById('r-visor').style.display='block'">
-        <div id="p-visor" class="question-text"></div>
+        <div id="p-visor"></div>
         <div id="r-visor" class="answer-text"></div>
-        <small style="margin-top:25px; color:#cfd8dc; font-weight:400; font-size:0.75rem;">
-            (Toca la tarjeta para dar la vuelta)
-        </small>
     </div>
-    
-    <div style="display:flex; gap:12px; margin-top:20px;">
-        <button class="btn btn-secondary" onclick="navegarVisor(-1)">⬅️ Anterior</button>
-        <button class="btn btn-secondary" onclick="navegarVisor(1)">Siguiente ➡️</button>
+    <div style="display:flex; gap:10px;">
+        <button class="btn" style="background:#90a4ae" onclick="navegarVisor(-1)">⬅️</button>
+        <button class="btn" style="background:#90a4ae" onclick="navegarVisor(1)">➡️</button>
     </div>
-    
-    <button class="btn" style="background:#546e7a; margin-top:25px;" onclick="volverAlMenu()">⬅️ Volver al menú</button>
+    <button class="btn" style="background:var(--dark)" onclick="volverMenu()">Volver</button>
 </div>
 
 <div class="container hidden" id="section-test">
-    <p class="subtitle" style="margin-bottom:10px">Modo Test Evaluativo</p>
-    <div id="test-progreso"></div>
-    
-    <div class="card" id="test-pregunta" style="cursor:default; min-height:140px; padding:40px 20px">
-        <style>#section-test .card::before { display:none; }</style> 
+    <div id="test-progreso" style="color:var(--primary); font-weight:600"></div>
+    <div class="card" id="test-pregunta" style="cursor:default"></div>
+    <div id="opciones-container" class="option-grid"></div>
+    <div id="escritura-container" class="hidden">
+        <input type="text" id="input-escritura" class="login-input" placeholder="Respuesta...">
+        <div id="feedback-test" style="margin:10px; font-weight:bold"></div>
+        <button class="btn" style="background:var(--read-color)" onclick="comprobarEscritura()">Comprobar</button>
     </div>
-    
-    <div id="opciones-container">
-        </div>
-    
-    <div id="escritura-container" class="hidden" style="margin-top:25px">
-        <input type="text" id="input-escritura" class="login-input" style="text-align:center; font-size:1.3rem" placeholder="Escribe la respuesta exacta...">
-        <div id="feedback-test" class="feedback"></div>
-        <button class="btn btn-test" style="background:var(--success); color:white;" onclick="comprobarEscritura()">Validar Respuesta</button>
-    </div>
-
-    <button class="btn btn-secondary" style="margin-top:30px;" onclick="confirmarAbandono()">Abanadonar Test</button>
+    <button class="btn" style="background:#90a4ae" onclick="volverMenu()">Salir</button>
 </div>
 
-<div id="loading" class="hidden">Conectando con la nube de Angy the teacher</div>
-
 <script>
-    /* =========================================
-       LÓGICA JAVASCRIPT (Sigue igual, pero
-       adaptada para los nuevos IDs y feedback)
-       ========================================= */
     const SHEETS_URL = "https://docs.google.com/spreadsheets/d/e/2PACX-1vThhYdCFgB1S2jQEhtXtyTaDh4NfNPa8XSkvPkIAvtr2No8Z1z3TYcCjxSqDT3kdnOSa2JMmnU8FP_1/pub?output=csv";
-
     let database = [];
-    let misTemas = {};
+    let recursosAlumno = { flashcards: {}, lecturas: [], videos: [] };
     let mazoActual = [];
     let currentIdx = 0;
-    let esModoEscritura = false;
 
-    // Cargar datos al inicio (sutilmente)
     window.onload = () => {
-        const loading = document.getElementById('loading');
-        loading.classList.remove('hidden');
-        Papa.parse(SHEETS_URL, {
-            download: true,
-            skipEmptyLines: true,
-            complete: (results) => { 
-                database = results.data; 
-                loading.classList.add('hidden');
-            },
-            error: () => {
-                alert("Uy, parece que Angy the teacher no tiene conexión ahora mismo. Prueba luego.");
-            }
-        });
+        Papa.parse(SHEETS_URL, { download: true, skipEmptyLines: true, complete: (r) => { database = r.data; } });
+        document.getElementById('current-date').innerText = new Date().toLocaleDateString('es-ES', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' });
     };
 
     function intentarLogin() {
         const user = document.getElementById('user-name').value.trim().toLowerCase();
         const pass = document.getElementById('user-pass').value.trim();
-        
-        const filasAlumno = database.filter(r => r[3] && r[3].trim().toLowerCase() === user && r[4] && r[4].trim() === pass);
+        const filas = database.filter(r => r[3]?.trim().toLowerCase() === user && r[4]?.trim() === pass);
 
-        if (filasAlumno.length > 0) {
+        if (filas.length > 0) {
             document.getElementById('section-login').classList.add('hidden');
             document.getElementById('section-app').classList.remove('hidden');
+            document.getElementById('welcome-title').innerText = "Hola, " + filas[0][3];
             
-            // Título personalizado
-            document.getElementById('welcome-title').innerText = filasAlumno[0][3];
-            
-            misTemas = {};
-            filasAlumno.forEach(f => {
-                const tema = (f[2] || "General").trim();
-                if (!misTemas[tema]) misTemas[tema] = [];
-                misTemas[tema].push({ p: f[0], r: f[1] });
+            recursosAlumno = { flashcards: {}, lecturas: [], videos: [] };
+            filas.forEach(f => {
+                const tipo = (f[5] || "Flashcard").trim().toLowerCase();
+                if (tipo === "lectura") recursosAlumno.lecturas.push({ titulo: f[0], link: f[1], tema: f[2] });
+                else if (tipo === "video") recursosAlumno.videos.push({ titulo: f[0], link: f[1], tema: f[2] });
+                else {
+                    if (!recursosAlumno.flashcards[f[2]]) recursosAlumno.flashcards[f[2]] = [];
+                    recursosAlumno.flashcards[f[2]].push({ p: f[0], r: f[1] });
+                }
             });
-            renderizarMenu();
-        } else {
-            alert("No hemos podido identificarte. Revisa bien tu nombre y contraseña.");
-        }
+            renderizarTodo();
+        } else alert("Acceso incorrecto");
     }
 
-    function renderizarMenu() {
-        const lista = document.getElementById('lista-mazos');
-        lista.innerHTML = ""; 
-        Object.keys(misTemas).sort().forEach(tema => {
-            const div = document.createElement('div');
-            div.className = 'mazo-item';
-            div.innerHTML = `
-                <div class="mazo-info">
-                    <span class="mazo-tema">${tema}</span>
-                    <span class="mazo-conteo">${misTemas[tema].length} tarjetas de repaso</span>
-                </div>
-                <div class="mazo-acciones">
-                    <button class="btn btn-mini" onclick="abrirVisor('${tema}')">Ver Repaso</button>
-                    <button class="btn btn-mini btn-test" style="color:white" onclick="abrirTest('${tema}')">Hacer Test</button>
-                </div>`;
-            lista.appendChild(div);
+    function renderizarTodo() {
+        // Flashcards
+        const fCont = document.getElementById('tab-flashcards');
+        fCont.innerHTML = "";
+        Object.keys(recursosAlumno.flashcards).forEach(t => {
+            fCont.innerHTML += `<div class="recurso-card"><div class="recurso-info"><h4>${t}</h4><span>${recursosAlumno.flashcards[t].length} tarjetas</span></div>
+                <div style="display:flex; gap:5px"><button class="btn-action" style="background:#90a4ae" onclick="abrirVisor('${t}')">Ver</button>
+                <button class="btn-action" style="background:var(--primary)" onclick="abrirTest('${t}')">Test</button></div></div>`;
+        });
+
+        // Lecturas
+        const lCont = document.getElementById('tab-lecturas');
+        lCont.innerHTML = recursosAlumno.lecturas.length ? "" : "<p>No hay lecturas asignadas</p>";
+        recursosAlumno.lecturas.forEach(l => {
+            lCont.innerHTML += `<div class="recurso-card"><div class="recurso-info"><h4>${l.titulo}</h4><span>Tema: ${l.tema}</span></div>
+                <button class="btn-action" style="background:var(--read-color)" onclick="window.open('${l.link}','_blank')">Abrir PDF</button></div>`;
+        });
+
+        // Videos
+        const vCont = document.getElementById('tab-videos');
+        vCont.innerHTML = recursosAlumno.videos.length ? "" : "<p>No hay vídeos asignados</p>";
+        recursosAlumno.videos.forEach(v => {
+            const videoId = v.link.split('v=')[1]?.split('&')[0] || v.link.split('/').pop();
+            vCont.innerHTML += `<div style="margin-bottom:25px; text-align:left"><h4>${v.titulo}</h4><div class="video-container">
+                <iframe src="https://www.youtube.com/embed/${videoId}" allowfullscreen></iframe></div></div>`;
         });
     }
 
-    function volverAlMenu() {
+    function cambiarTab(tab, btn) {
+        document.querySelectorAll('.tab-content').forEach(c => c.classList.add('hidden'));
+        document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+        document.getElementById('tab-' + tab).classList.remove('hidden');
+        btn.classList.add('active');
+    }
+
+    function volverMenu() {
         document.querySelectorAll('.container').forEach(c => c.classList.add('hidden'));
         document.getElementById('section-app').classList.remove('hidden');
     }
-    
-    function confirmarAbandono() {
-        if(confirm("¿Seguro que quieres dejar el test a medias? No se guardará tu progreso.")) {
-            volverAlMenu();
-        }
-    }
 
-    // --- VISOR ---
-    function abrirVisor(tema) {
-        mazoActual = misTemas[tema];
-        currentIdx = 0;
+    // --- Lógica de Flashcards (Visor/Test) se mantiene igual que la anterior ---
+    function abrirVisor(t) {
+        mazoActual = recursosAlumno.flashcards[t]; currentIdx = 0;
         document.getElementById('section-app').classList.add('hidden');
         document.getElementById('section-visor').classList.remove('hidden');
-        document.getElementById('visor-tema').innerText = tema;
-        mostrarCartaVisor();
+        document.getElementById('visor-tema').innerText = t; mostrarCartaVisor();
     }
-
     function mostrarCartaVisor() {
         document.getElementById('p-visor').innerText = mazoActual[currentIdx].p;
         document.getElementById('r-visor').innerText = mazoActual[currentIdx].r;
         document.getElementById('r-visor').style.display = 'none';
     }
+    function navegarVisor(d) { currentIdx = (currentIdx + d + mazoActual.length) % mazoActual.length; mostrarCartaVisor(); }
 
-    function navegarVisor(dir) {
-        currentIdx = (currentIdx + dir + mazoActual.length) % mazoActual.length;
-        mostrarCartaVisor();
-    }
-
-    // --- TEST ---
-    function abrirTest(tema) {
-        mazoActual = [...misTemas[tema]].sort(() => Math.random() - 0.5);
+    function abrirTest(t) {
+        mazoActual = [...recursosAlumno.flashcards[t]].sort(() => Math.random() - 0.5);
         currentIdx = 0;
-        esModoEscritura = tema.toLowerCase().includes("verbos");
         document.getElementById('section-app').classList.add('hidden');
         document.getElementById('section-test').classList.remove('hidden');
-        mostrarPreguntaTest();
+        const modoE = t.toLowerCase().includes("verbos");
+        mostrarPreguntaTest(modoE);
     }
 
-    function mostrarPreguntaTest() {
-        if (currentIdx >= mazoActual.length) {
-            alert("¡Excepcional! Has completado el test."); return volverAlMenu();
-        }
+    function mostrarPreguntaTest(modoE) {
+        if (currentIdx >= mazoActual.length) { alert("¡Completado!"); return volverMenu(); }
         const item = mazoActual[currentIdx];
         document.getElementById('test-progreso').innerText = `${currentIdx + 1} / ${mazoActual.length}`;
         document.getElementById('test-pregunta').innerText = item.p;
-        
         const optCont = document.getElementById('opciones-container');
         const escCont = document.getElementById('escritura-container');
-        const feedback = document.getElementById('feedback-test');
-        feedback.innerText = "";
-        feedback.className = "feedback"; // Limpiar feedback visual
-        document.getElementById('input-escritura').value = "";
-
-        if (esModoEscritura) {
-            optCont.classList.add('hidden');
-            escCont.classList.remove('hidden');
-        } else {
-            escCont.classList.add('hidden');
-            optCont.classList.remove('hidden');
-            generarOpciones(item);
-        }
-    }
-
-    function generarOpciones(item) {
-        const container = document.getElementById('opciones-container');
-        container.innerHTML = "";
-        let opciones = [item.r];
-        // Respuestas de toda la base (Columna B=1)
-        let todas = database.filter(r => r[1]).map(f => f[1]); 
-        let incorrectas = [...new Set(todas.filter(r => r !== item.r))].sort(() => Math.random() - 0.5);
         
-        // Cogemos 3 incorrectas y mezclamos
-        opciones = [...opciones, ...incorrectas.slice(0, 3)].sort(() => Math.random() - 0.5);
-
-        opciones.forEach(opt => {
-            const b = document.createElement('button');
-            b.className = "option-btn";
-            b.innerText = opt;
-            b.onclick = () => { 
-                // Feedback visual de la correcta sutil
-                if (opt === item.r) { b.style.borderColor = "var(--success)"; b.style.color="var(--success)"; }
-                else { b.style.borderColor = "var(--error)"; b.style.color="var(--error)"; }
-                
-                setTimeout(() => {
-                    currentIdx++; 
-                    mostrarPreguntaTest(); 
-                }, 600); // Pequeño retraso para ver el feedback
-            };
-            container.appendChild(b);
-        });
+        if (modoE) {
+            optCont.classList.add('hidden'); escCont.classList.remove('hidden');
+            document.getElementById('input-escritura').value = ""; document.getElementById('feedback-test').innerText = "";
+        } else {
+            escCont.classList.add('hidden'); optCont.classList.remove('hidden');
+            optCont.innerHTML = "";
+            let opciones = [item.r, ...[...new Set(database.map(d => d[1]))].filter(x => x !== item.r).sort(() => Math.random() - 0.5).slice(0, 3)].sort(() => Math.random() - 0.5);
+            opciones.forEach(o => {
+                const b = document.createElement('button'); b.className = "btn"; b.style.background = "white"; b.style.color = "#333"; b.style.border = "1px solid #ddd";
+                b.innerText = o; b.onclick = () => { currentIdx++; mostrarPreguntaTest(modoE); };
+                optCont.appendChild(b);
+            });
+        }
     }
 
     function comprobarEscritura() {
         const input = document.getElementById('input-escritura').value.trim().toLowerCase();
         const correcta = mazoActual[currentIdx].r.trim().toLowerCase();
         const f = document.getElementById('feedback-test');
-        
-        if (input === correcta) {
-            f.innerHTML = "¡Perfecto! ✨";
-            f.className = "feedback feedback-correct";
-            setTimeout(() => { currentIdx++; mostrarPreguntaTest(); }, 1000);
-        } else {
-            f.innerHTML = `Uy, casi. La respuesta correcta era:<br><strong>${mazoActual[currentIdx].r}</strong>`;
-            f.className = "feedback feedback-incorrect";
-            // Damos 2.5 segundos para que vean la respuesta correcta antes de pasar
-            setTimeout(() => { currentIdx++; mostrarPreguntaTest(); }, 2500);
-        }
+        if (input === correcta) { f.innerText = "¡Correcto!"; f.style.color = "green"; setTimeout(() => { currentIdx++; mostrarPreguntaTest(true); }, 800); }
+        else { f.innerText = "Error, era: " + mazoActual[currentIdx].r; f.style.color = "red"; setTimeout(() => { currentIdx++; mostrarPreguntaTest(true); }, 2000); }
     }
 </script>
 </body>
