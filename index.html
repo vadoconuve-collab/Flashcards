@@ -11,40 +11,29 @@
             --primary: #0F172A; 
             --accent: #3B82F6;  
             --bg: #F8FAFC;
-            --glass: rgba(255, 255, 255, 0.10); /* Ultra transparencia */
+            --glass: rgba(255, 255, 255, 0.10);
         }
 
         body { margin: 0; padding: 0; font-family: 'Inter', sans-serif; background-color: var(--bg); display: flex; justify-content: center; min-height: 100vh; background-attachment: fixed; }
 
-        /* MARCA DE AGUA POTENTE */
         body::before {
             content: "Angy the teacher"; position: fixed; top: 50%; left: 50%;
             transform: translate(-50%, -50%) rotate(-15deg);
             font-family: 'Dancing Script', cursive; font-size: 12vw; 
-            color: rgba(15, 23, 42, 2) !important; z-index: -1; pointer-events: none;
+            color: rgba(15, 23, 42, 0.05) !important; z-index: -1; pointer-events: none;
             white-space: nowrap;
         }
 
         .container { width: 100%; max-width: 550px; padding: 40px 20px; box-sizing: border-box; }
 
-/* PANEL CRISTALINO FORZADO */
         .card-panel { 
-            /* Fondo ultra-transparente al 10% (0.1) - !important para prioridad máxima */
             background: rgba(255, 255, 255, 0.01) !important; 
-            
-            /* Efecto de cristal desenfocado - !important para prioridad máxima */
             backdrop-filter: blur(8px) !important; 
-            -webkit-backdrop-filter: blur(8px); /* Para Safari y iPhones */
-            
+            -webkit-backdrop-filter: blur(8px);
             border-radius: 30px; 
             padding: 30px; 
-            
-            /* Sombra muy suave para que el panel no desaparezca */
             box-shadow: 0 4px 20px rgba(0, 0, 0, 0.003); 
-            
             text-align: center; 
-            
-            /* Un borde un poco más marcado para que se vea donde termina el panel */
             border: 1px solid rgba(255, 255, 255, 0.05) !important; 
         }
 
@@ -67,7 +56,6 @@
         .flashcard-q { font-size: 1.8rem; font-weight: 600; color: var(--primary); }
         .flashcard-a { display: none; margin-top: 15px; font-size: 1.4rem; color: var(--accent); border-top: 1px solid rgba(0,0,0,0.1); padding-top: 15px; width: 100%; }
 
-        /* BOTÓN AUDIO CUQUI */
         .audio-btn { background: rgba(255,255,255,0.4); border: none; border-radius: 50%; width: 40px; height: 40px; cursor: pointer; font-size: 1.1rem; margin-top: 15px; display: flex; align-items: center; justify-content: center; transition: 0.3s; }
         .audio-btn:hover { background: var(--accent); color: white; transform: scale(1.1); }
 
@@ -96,20 +84,20 @@
         <div class="card-panel">
             <h2 id="student-display" style="text-align: left; font-size: 1.5rem; margin-bottom: 25px;"></h2>
             <div id="stats-estudiante" style="margin-top: 15px; padding: 10px; background: rgba(255,255,255,0.2); border-radius: 15px; display: flex; justify-content: space-around; align-items: center;">
-    <div><span style="font-size: 1.2rem;">🏆</span> <span id="puntos-valor" style="font-weight: 600;">0</span> pts</div>
-    <div><span style="font-size: 1.2rem;">⭐</span> <span id="nivel-texto" style="font-weight: 600; color: var(--accent);">Novato</span></div>
-</div>
+                <div><span style="font-size: 1.2rem;">🏆</span> <span id="puntos-valor" style="font-weight: 600;">0</span> pts</div>
+                <div><span style="font-size: 1.2rem;">⭐</span> <span id="nivel-texto" style="font-weight: 600; color: var(--accent);">Novato</span></div>
+            </div>
             
-            <div class="nav-tabs">
+            <div class="nav-tabs" style="margin-top: 20px;">
                 <div class="tab-btn tab-item active" onclick="switchTab('flashcards', this)">🎴 Mazos</div>
                 <div class="tab-btn tab-item" onclick="switchTab('lecturas', this)">📖 Leer</div>
                 <div class="tab-btn tab-item" onclick="switchTab('videos', this)">🎥 Ver</div>
             </div>
 
             <div id="container-reto" class="hidden" style="margin-bottom: 25px; padding: 20px; background: rgba(245, 158, 11, 0.15); border: 1px dashed #F59E0B; border-radius: 20px; text-align: left;">
-    <h4 style="margin: 0 0 5px 0; color: #D97706; font-size: 0.9rem;">💡 Reto de la semana:</h4>
-    <p id="reto-texto" style="margin: 0; font-weight: 600; color: var(--primary); font-size: 1rem;"></p>
-</div>
+                <h4 style="margin: 0 0 5px 0; color: #D97706; font-size: 0.9rem;">💡 Reto de la semana:</h4>
+                <p id="reto-texto" style="margin: 0; font-weight: 600; color: var(--primary); font-size: 1rem;"></p>
+            </div>
 
             <div id="content-flashcards" class="tab-content"></div>
             <div id="content-lecturas" class="tab-content hidden"></div>
@@ -129,8 +117,8 @@
                 <button class="audio-btn" onclick="event.stopPropagation(); reproducirAudio()">🔊</button>
                 <div id="flash-a" class="flashcard-a"></div>
             </div>
-                 <div id="quiz-options" class="hidden" style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-top: 20px;">
-    </div>
+
+            <div id="quiz-options" class="hidden" style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-top: 20px;"></div>
 
             <div id="writing-area" class="hidden">
                 <input type="text" id="write-input" placeholder="Escribe aquí la respuesta...">
@@ -149,30 +137,26 @@
 
 <script>
     const SHEETS_URL = "https://docs.google.com/spreadsheets/d/e/2PACX-1vThhYdCFgB1S2jQEhtXtyTaDh4NfNPa8XSkvPkIAvtr2No8Z1z3TYcCjxSqDT3kdnOSa2JMmnU8FP_1/pub?output=csv";
-let db = [], items = { flashcards: {}, readings: [], videos: [], reto: null }, mazo = [], idx = 0, modoTest = false, puntos = 0;
-// --- MÓDULO DE GAMIFICACIÓN ---
-function actualizarRacha() {
-    const hoy = new Date().toLocaleDateString();
-    let datosRacha = JSON.parse(localStorage.getItem('racha_angy') || '{"ultimaVisita":"","dias":0}');
-    
-    if (datosRacha.ultimaVisita === hoy) return datosRacha.dias; // Ya entró hoy
+    let db = [], items = { flashcards: {}, readings: [], videos: [], reto: null }, mazo = [], idx = 0, modoTest = false, puntos = 0;
 
-    const ayer = new Date();
-    ayer.setDate(ayer.getDate() - 1);
-    
-    if (datosRacha.ultimaVisita === ayer.toLocaleDateString()) {
-        datosRacha.dias += 1; // Racha continúa
-    } else {
-        datosRacha.dias = 1; // Racha empieza de cero
+    function actualizarRacha() {
+        const hoy = new Date().toLocaleDateString();
+        let datosRacha = JSON.parse(localStorage.getItem('racha_angy') || '{"ultimaVisita":"","dias":0}');
+        if (datosRacha.ultimaVisita === hoy) return datosRacha.dias;
+        const ayer = new Date();
+        ayer.setDate(ayer.getDate() - 1);
+        if (datosRacha.ultimaVisita === ayer.toLocaleDateString()) {
+            datosRacha.dias += 1;
+        } else {
+            datosRacha.dias = 1;
+        }
+        datosRacha.ultimaVisita = hoy;
+        localStorage.setItem('racha_angy', JSON.stringify(datosRacha));
+        return datosRacha.dias;
     }
-    
-    datosRacha.ultimaVisita = hoy;
-    localStorage.setItem('racha_angy', JSON.stringify(datosRacha));
-    return datosRacha.dias;
-}
+
     window.onload = () => {
         Papa.parse(SHEETS_URL, { download: true, complete: (res) => db = res.data });
-        // Precarga de voces para evitar el fantasma
         window.speechSynthesis.getVoices();
     };
 
@@ -180,10 +164,7 @@ function actualizarRacha() {
         window.speechSynthesis.cancel();
         const msg = new SpeechSynthesisUtterance(mazo[idx].q);
         const voces = window.speechSynthesis.getVoices();
-        const vozPreferida = voces.find(v => 
-            (v.name.includes('Female') || v.name.includes('Google') || v.name.includes('Zira')) 
-            && v.lang.includes('en')
-        );
+        const vozPreferida = voces.find(v => (v.name.includes('Female') || v.name.includes('Google') || v.name.includes('Zira')) && v.lang.includes('en'));
         if (vozPreferida) msg.voice = vozPreferida;
         msg.lang = 'en-US';
         msg.pitch = 1.1; 
@@ -195,16 +176,14 @@ function actualizarRacha() {
         const u = document.getElementById('user-name').value.trim().toLowerCase();
         const p = document.getElementById('user-pass').value.trim();
         const rows = db.filter(r => r[3]?.toLowerCase() === u && r[4] === p);
-        
         if (rows.length) {
             document.getElementById('view-login').classList.add('hidden');
             document.getElementById('view-dashboard').classList.remove('hidden');
             document.getElementById('student-display').innerText = "¡Hola, " + rows[0][3] + "! ✨";
-            // Mostrar racha al entrar
-    const diasRacha = actualizarRacha();
-    if (diasRacha > 1) {
-        document.getElementById('student-display').innerHTML += `<br><span style="font-size:0.9rem; color:#F59E0B;">🔥 ¡Llevas ${diasRacha} días seguidos estudiando!</span>`;
-    }
+            const diasRacha = actualizarRacha();
+            if (diasRacha > 1) {
+                document.getElementById('student-display').innerHTML += `<br><span style="font-size:0.9rem; color:#F59E0B;">🔥 ¡Llevas ${diasRacha} días seguidos estudiando!</span>`;
+            }
             items = { flashcards: {}, readings: [], videos: [], reto: null };
             rows.forEach(r => {
                 const type = (r[5] || "").toLowerCase();
@@ -222,12 +201,12 @@ function actualizarRacha() {
 
     function render() {
         const conReto = document.getElementById('container-reto');
-    if (items.reto) {
-        conReto.classList.remove('hidden');
-        document.getElementById('reto-texto').innerHTML = `${items.reto.t}: <span style="font-weight:400;">${items.reto.desc}</span>`;
-    } else {
-        conReto.classList.add('hidden');
-    }
+        if (items.reto) {
+            conReto.classList.remove('hidden');
+            document.getElementById('reto-texto').innerHTML = `${items.reto.t}: <span style="font-weight:400;">${items.reto.desc}</span>`;
+        } else {
+            conReto.classList.add('hidden');
+        }
         const fCon = document.getElementById('content-flashcards'); fCon.innerHTML = "";
         Object.keys(items.flashcards).forEach(cat => {
             fCon.innerHTML += `<div class="resource-row"><span style="font-weight:600; font-size:0.95rem; color:var(--primary)">${cat}</span><div><button class="btn-small btn-repasar" onclick="startStudy('${cat}', false)">🎴 Ver</button><button class="btn-small btn-test" onclick="startStudy('${cat}', true)">✍️ Test</button></div></div>`;
@@ -246,86 +225,74 @@ function actualizarRacha() {
         el.classList.add('active');
     }
 
-function startStudy(cat, isTest) {
-    mazo = [...items.flashcards[cat]].sort(() => Math.random() - 0.5);
-    idx = 0; modoTest = isTest;
-    
-    // Configuramos la vista
-    document.getElementById('view-dashboard').classList.add('hidden');
-    document.getElementById('view-study').classList.remove('hidden');
-    document.getElementById('study-topic').innerText = cat + (modoTest ? " • Modo Test" : " • Modo Repaso");
+    function startStudy(cat, isTest) {
+        mazo = [...items.flashcards[cat]].sort(() => Math.random() - 0.5);
+        idx = 0; modoTest = isTest;
+        document.getElementById('view-dashboard').classList.add('hidden');
+        document.getElementById('view-study').classList.remove('hidden');
+        document.getElementById('study-topic').innerText = cat + (modoTest ? " • Modo Test" : " • Modo Repaso");
 
-    // --- LÓGICA REFORZADA ---
-    const esVerbo = cat.toLowerCase().includes("verbo");
-
-    if (modoTest) {
-        if (esVerbo) {
-            // Test de escribir para verbos
-            document.getElementById('writing-area').classList.remove('hidden');
-            document.getElementById('quiz-options').classList.add('hidden');
+        const esVerbo = cat.toLowerCase().includes("verbo");
+        if (modoTest) {
+            if (esVerbo) {
+                document.getElementById('writing-area').classList.remove('hidden');
+                document.getElementById('quiz-options').classList.add('hidden');
+            } else {
+                document.getElementById('writing-area').classList.add('hidden');
+                document.getElementById('quiz-options').classList.remove('hidden');
+            }
         } else {
-            // Test de 4 opciones para el resto
             document.getElementById('writing-area').classList.add('hidden');
-            document.getElementById('quiz-options').classList.remove('hidden');
+            document.getElementById('quiz-options').classList.add('hidden');
         }
-    } else {
-        // Modo Repaso (Ver)
-        document.getElementById('writing-area').classList.add('hidden');
-        document.getElementById('quiz-options').classList.add('hidden');
+        updateCard();
     }
-    
-function updateCard() {
-    const qEl = document.getElementById('flash-q');
-    const aEl = document.getElementById('flash-a');
-    const optsEl = document.getElementById('quiz-options'); // <--- El hueco de los botones
-    
-    qEl.innerText = mazo[idx].q;
-    aEl.innerText = mazo[idx].a;
-    aEl.style.display = "none";
-    
-    // 1. Vaciamos los botones anteriores para que no se acumulen
-    optsEl.innerHTML = ""; 
-    
-    document.getElementById('write-feedback').innerText = "";
-    document.getElementById('write-input').value = "";
-    document.getElementById('study-progress').innerText = `TARJETA ${idx + 1} de ${mazo.length}`;
 
-    // 2. ¿Es modo Test y NO es verbo? ¡Fabricamos botones!
-    const esVerbo = document.getElementById('study-topic').innerText.toLowerCase().includes("verbo");
-    
-    if (modoTest && !esVerbo) {
-        // Creamos la lista de opciones (la correcta + 3 aleatorias)
-        let opciones = [mazo[idx].a];
-        let otras = mazo.filter(m => m.a !== mazo[idx].a).map(m => m.a);
-        otras.sort(() => 0.5 - Math.random());
-        opciones = opciones.concat(otras.slice(0, 3)).sort(() => 0.5 - Math.random());
+    function updateCard() {
+        const qEl = document.getElementById('flash-q');
+        const aEl = document.getElementById('flash-a');
+        const optsEl = document.getElementById('quiz-options');
+        
+        qEl.innerText = mazo[idx].q;
+        aEl.innerText = mazo[idx].a;
+        aEl.style.display = "none";
+        if (optsEl) optsEl.innerHTML = ""; 
+        
+        document.getElementById('write-feedback').innerText = "";
+        document.getElementById('write-input').value = "";
+        document.getElementById('study-progress').innerText = `TARJETA ${idx + 1} de ${mazo.length}`;
 
-        // Dibujamos cada botón en el HTML
-        opciones.forEach(opt => {
-            const btn = document.createElement('button');
-            btn.className = "btn-primary"; // <--- Usa tu estilo de botón
-            btn.style.fontSize = "0.85rem";
-            btn.style.padding = "10px";
-            btn.style.background = "rgba(255,255,255,0.5)"; // Estilo cristalino
-            btn.style.color = "var(--primary)";
-            btn.style.border = "1px solid rgba(0,0,0,0.1)";
-            btn.innerText = opt;
-            
-            // Al hacer clic, comprobamos si es la buena
-            btn.onclick = () => {
-                if (opt === mazo[idx].a) {
-                    puntos += 10;
-                    document.getElementById('puntos-valor').innerText = puntos;
-                    actualizarNivel();
-                    moveCard(1); // ¡Correcto! Siguiente tarjeta
-                } else {
-                    alert("¡Ups! Inténtalo de nuevo 🧐");
-                }
-            };
-            optsEl.appendChild(btn);
-        });
+        const esVerbo = document.getElementById('study-topic').innerText.toLowerCase().includes("verbo");
+        
+        if (modoTest && !esVerbo && optsEl) {
+            let opciones = [mazo[idx].a];
+            let otras = mazo.filter(m => m.a !== mazo[idx].a).map(m => m.a);
+            otras.sort(() => 0.5 - Math.random());
+            opciones = opciones.concat(otras.slice(0, 3)).sort(() => 0.5 - Math.random());
+
+            opciones.forEach(opt => {
+                const btn = document.createElement('button');
+                btn.className = "btn-primary"; 
+                btn.style.fontSize = "0.85rem";
+                btn.style.padding = "10px";
+                btn.style.background = "rgba(255,255,255,0.5)"; 
+                btn.style.color = "var(--primary)";
+                btn.style.border = "1px solid rgba(0,0,0,0.1)";
+                btn.innerText = opt;
+                btn.onclick = () => {
+                    if (opt === mazo[idx].a) {
+                        puntos += 10;
+                        document.getElementById('puntos-valor').innerText = puntos;
+                        actualizarNivel();
+                        moveCard(1); 
+                    } else {
+                        alert("¡Ups! Inténtalo de nuevo 🧐");
+                    }
+                };
+                optsEl.appendChild(btn);
+            });
+        }
     }
-}
 
     function showAnswer() { 
         if (!modoTest || (modoTest && !document.getElementById('study-topic').innerText.toLowerCase().includes("verbo"))) {
@@ -333,36 +300,31 @@ function updateCard() {
         }
     }
 
-function checkWriting() {
-    const val = document.getElementById('write-input').value.trim().toLowerCase();
-    const correct = mazo[idx].a.toLowerCase();
-    const feed = document.getElementById('write-feedback');
-    
-    if (val === correct) {
-        feed.innerText = "¡Correcto! +10 pts ✨"; 
-        feed.style.color = "#10B981";
-        
-        // --- SUMAR PUNTOS ---
-        puntos += 10;
-        document.getElementById('puntos-valor').innerText = puntos;
-        actualizarNivel();
-        // --------------------
-
-        setTimeout(() => moveCard(1), 1000);
-    } else {
-        feed.innerText = "Ups! Era: " + mazo[idx].a; 
-        feed.style.color = "#EF4444";
+    function checkWriting() {
+        const val = document.getElementById('write-input').value.trim().toLowerCase();
+        const correct = mazo[idx].a.toLowerCase();
+        const feed = document.getElementById('write-feedback');
+        if (val === correct) {
+            feed.innerText = "¡Correcto! +10 pts ✨"; 
+            feed.style.color = "#10B981";
+            puntos += 10;
+            document.getElementById('puntos-valor').innerText = puntos;
+            actualizarNivel();
+            setTimeout(() => moveCard(1), 1000);
+        } else {
+            feed.innerText = "Ups! Era: " + mazo[idx].a; 
+            feed.style.color = "#EF4444";
+        }
     }
-}
 
-function actualizarNivel() {
-    let nivel = "Beginner Explorer 🥚";
-    if (puntos >= 50) nivel = "Word Hunter 🏹";
-    if (puntos >= 150) nivel = "Grammar Ninja 🥷";
-    if (puntos >= 300) nivel = "Language Master 👑";
-    
-    document.getElementById('nivel-texto').innerText = nivel;
-}
+    function actualizarNivel() {
+        let nivel = "Beginner Explorer 🥚";
+        if (puntos >= 50) nivel = "Word Hunter 🏹";
+        if (puntos >= 150) nivel = "Grammar Ninja 🥷";
+        if (puntos >= 300) nivel = "Language Master 👑";
+        if (puntos >= 500) nivel = "Angy's favourite student 🌟";
+        document.getElementById('nivel-texto').innerText = nivel;
+    }
 
     function moveCard(d) { idx = (idx + d + mazo.length) % mazo.length; updateCard(); }
     function exitStudy() { document.getElementById('view-study').classList.add('hidden'); document.getElementById('view-dashboard').classList.remove('hidden'); }
