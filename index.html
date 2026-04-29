@@ -11,7 +11,7 @@
             --primary: #0F172A; 
             --accent: #3B82F6;  
             --bg: #F0F4F8; /* Un gris azulado muy suave para que resalte la transparencia */
-            --white-glass: rgba(255, 255, 255, 0.88); /* Blanco semitransparente */
+            --white-glass: rgba(255, 255, 255, 0.05); /* Blanco semitransparente */
             --text-main: #1E293B;
             --shadow: 0 10px 30px rgba(0, 0, 0, 0.08);
         }
@@ -51,7 +51,7 @@
             padding: 40px; 
             box-shadow: var(--shadow);
             text-align: center;
-            border: 1px solid rgba(255, 255, 255, 0.3);
+            border: 1px solid rgba(255, 255, 255, 0.08);
         }
 
         h1, h2 { font-family: 'Poppins', sans-serif; color: var(--primary); margin: 0; }
@@ -60,7 +60,7 @@
             width: 100%; padding: 16px; margin-bottom: 12px;
             border: 1px solid rgba(0,0,0,0.05); border-radius: 15px;
             font-size: 1rem; outline: none; box-sizing: border-box;
-            background: rgba(255,255,255,0.5);
+            background: rgba(255,255,255,0.05);
         }
 
         .btn-primary {
@@ -96,14 +96,14 @@
         .flashcard-box {
             min-height: 200px; display: flex; flex-direction: column;
             justify-content: center; align-items: center;
-            background: rgba(255,255,255,0.3); 
-            border: 1px solid rgba(255,255,255,0.4);
+            background: rgba(255,255,255,0.05); 
+            border: 1px solid rgba(255,255,255,0.05);
             border-radius: 25px; padding: 25px; margin: 20px 0; cursor: pointer;
             transition: 0.3s;
         }
 
         .flashcard-q { font-size: 1.8rem; font-weight: 600; color: var(--primary); }
-        .flashcard-a { display: none; margin-top: 15px; font-size: 1.4rem; color: var(--accent); border-top: 1px solid rgba(0,0,0,0.1); padding-top: 15px; width: 100%; }
+        .flashcard-a { display: none; margin-top: 15px; font-size: 1.4rem; color: var(--accent); border-top: 1px solid rgba(0,0,0,0.05); padding-top: 15px; width: 100%; }
 
         .video-wrapper { position: relative; padding-bottom: 56.25%; height: 0; border-radius: 20px; overflow: hidden; margin-top: 15px; }
         .video-wrapper iframe { position: absolute; top: 0; left: 0; width: 100%; height: 100%; border: 0; }
