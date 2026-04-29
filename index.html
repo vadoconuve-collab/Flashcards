@@ -249,17 +249,29 @@ function actualizarRacha() {
 function startStudy(cat, isTest) {
     mazo = [...items.flashcards[cat]].sort(() => Math.random() - 0.5);
     idx = 0; modoTest = isTest;
-    const esVerbo = cat.toLowerCase().includes("verbo");
     
+    // Configuramos la vista
     document.getElementById('view-dashboard').classList.add('hidden');
     document.getElementById('view-study').classList.remove('hidden');
     document.getElementById('study-topic').innerText = cat + (modoTest ? " • Modo Test" : " • Modo Repaso");
 
-    // Mostrar escritura solo si es Test Y Verbo
-    if (modoTest && esVerbo) {
-        document.getElementById('writing-area').classList.remove('hidden');
+    // --- LÓGICA REFORZADA ---
+    const esVerbo = cat.toLowerCase().includes("verbo");
+
+    if (modoTest) {
+        if (esVerbo) {
+            // Test de escribir para verbos
+            document.getElementById('writing-area').classList.remove('hidden');
+            document.getElementById('quiz-options').classList.add('hidden');
+        } else {
+            // Test de 4 opciones para el resto
+            document.getElementById('writing-area').classList.add('hidden');
+            document.getElementById('quiz-options').classList.remove('hidden');
+        }
     } else {
+        // Modo Repaso (Ver)
         document.getElementById('writing-area').classList.add('hidden');
+        document.getElementById('quiz-options').classList.add('hidden');
     }
     
     updateCard();
