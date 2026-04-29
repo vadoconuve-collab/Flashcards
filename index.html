@@ -20,21 +20,21 @@
             content: "Angy the teacher"; position: fixed; top: 50%; left: 50%;
             transform: translate(-50%, -50%) rotate(-15deg);
             font-family: 'Dancing Script', cursive; font-size: 12vw; 
-            color: rgba(15, 23, 42, 0.05) !important; z-index: -1; pointer-events: none;
+            color: rgba(15, 23, 42, 2) !important; z-index: -1; pointer-events: none;
             white-space: nowrap;
         }
 
         .container { width: 100%; max-width: 550px; padding: 40px 20px; box-sizing: border-box; }
 
         .card-panel { 
-            background: rgba(255, 255, 255, 0.01) !important; 
+            background: rgba(255, 255, 255, 0.001) !important; 
             backdrop-filter: blur(8px) !important; 
             -webkit-backdrop-filter: blur(8px);
             border-radius: 30px; 
             padding: 30px; 
             box-shadow: 0 4px 20px rgba(0, 0, 0, 0.003); 
             text-align: center; 
-            border: 1px solid rgba(255, 255, 255, 0.05) !important; 
+            border: 1px solid rgba(255, 255, 255, 0.005) !important; 
         }
 
         .nav-tabs { display: flex; gap: 8px; margin-bottom: 25px; }
@@ -248,51 +248,48 @@
         updateCard();
     }
 
-    function updateCard() {
-        const qEl = document.getElementById('flash-q');
-        const aEl = document.getElementById('flash-a');
-        const optsEl = document.getElementById('quiz-options');
-        
-        qEl.innerText = mazo[idx].q;
-        aEl.innerText = mazo[idx].a;
-        aEl.style.display = "none";
-        if (optsEl) optsEl.innerHTML = ""; 
-        
-        document.getElementById('write-feedback').innerText = "";
-        document.getElementById('write-input').value = "";
-        document.getElementById('study-progress').innerText = `TARJETA ${idx + 1} de ${mazo.length}`;
+function updateCard() {
+    const qEl = document.getElementById('flash-q');
+    const aEl = document.getElementById('flash-a');
+    const optsEl = document.getElementById('quiz-options');
+    
+    qEl.innerText = mazo[idx].q;
+    aEl.innerText = mazo[idx].a;
+    aEl.style.display = "none";
+    if (optsEl) optsEl.innerHTML = ""; 
+    
+    document.getElementById('write-feedback').innerText = "";
+    document.getElementById('write-input').value = "";
+    document.getElementById('study-progress').innerText = `TARJETA ${idx + 1} de ${mazo.length}`;
 
-        const esVerbo = document.getElementById('study-topic').innerText.toLowerCase().includes("verbo");
-        
-        if (modoTest && !esVerbo && optsEl) {
-            let opciones = [mazo[idx].a];
-            let otras = mazo.filter(m => m.a !== mazo[idx].a).map(m => m.a);
-            otras.sort(() => 0.5 - Math.random());
-            opciones = opciones.concat(otras.slice(0, 3)).sort(() => 0.5 - Math.random());
+    const esVerbo = document.getElementById('study-topic').innerText.toLowerCase().includes("verbo");
+    
+    if (modoTest && !esVerbo && optsEl) {
+        let opciones = [mazo[idx].a];
+        let otras = mazo.filter(m => m.a !== mazo[idx].a).map(m => m.a);
+        otras.sort(() => 0.5 - Math.random());
+        opciones = opciones.concat(otras.slice(0, 3)).sort(() => 0.5 - Math.random());
 
-            opciones.forEach(opt => {
-                const btn = document.createElement('button');
-                btn.className = "btn-primary"; 
-                btn.style.fontSize = "0.85rem";
-                btn.style.padding = "10px";
-                btn.style.background = "rgba(255,255,255,0.5)"; 
-                btn.style.color = "var(--primary)";
-                btn.style.border = "1px solid rgba(0,0,0,0.1)";
-                btn.innerText = opt;
-                btn.onclick = () => {
-                    if (opt === mazo[idx].a) {
-                        puntos += 10;
-                        document.getElementById('puntos-valor').innerText = puntos;
-                        actualizarNivel();
-                        moveCard(1); 
-                    } else {
-                        alert("¡Ups! Inténtalo de nuevo 🧐");
-                    }
-                };
-                optsEl.appendChild(btn);
-            });
-        }
+        opciones.forEach(opt => {
+            const btn = document.createElement('button');
+            btn.className = "btn-primary"; 
+            btn.style.margin = "5px 0"; 
+            btn.innerText = opt;
+            btn.onclick = () => {
+                if (opt === mazo[idx].a) {
+                    puntos += 10;
+                    document.getElementById('puntos-valor').innerText = puntos;
+                    actualizarNivel();
+                    moveCard(1);
+                } else {
+                    alert("¡Error! La respuesta correcta era: " + mazo[idx].a);
+                    moveCard(1);
+                }
+            };
+            optsEl.appendChild(btn);
+        });
     }
+}
 
     function showAnswer() { 
         if (!modoTest || (modoTest && !document.getElementById('study-topic').innerText.toLowerCase().includes("verbo"))) {
@@ -326,19 +323,14 @@
         document.getElementById('nivel-texto').innerText = nivel;
     }
 
-    function moveCard(d) {
+function moveCard(d) {
     idx += d;
-    
-    // Si llegamos al final del mazo
     if (idx >= mazo.length) {
         alert("¡Mazo completado! Has hecho un gran trabajo. ✨");
         exitStudy();
         return;
     }
-    
-    // Si intentamos ir atrás en la primera tarjeta, nos quedamos en 0
     if (idx < 0) idx = 0;
-    
     updateCard();
 }
     function exitStudy() { document.getElementById('view-study').classList.add('hidden'); document.getElementById('view-dashboard').classList.remove('hidden'); }
