@@ -12,7 +12,7 @@
             --accent: #3B82F6;  
             --bg: #F0F4F8;
             /* Transparencia muy alta para ver la marca de agua */
-            --white-glass: rgba(255, 255, 255, 0.01); 
+            --white-glass: rgba(255, 255, 255, 0.005); 
         }
 
         body { margin: 0; padding: 0; font-family: 'Inter', sans-serif; background-color: var(--bg); display: flex; justify-content: center; min-height: 100vh; background-attachment: fixed; }
@@ -21,14 +21,14 @@
             content: "Angy the teacher"; position: fixed; top: 50%; left: 50%;
             transform: translate(-50%, -50%) rotate(-15deg);
             font-family: 'Dancing Script', cursive; font-size: 12vw; 
-            color: rgba(15, 23, 42, 0.50) !important; z-index: -1; pointer-events: none;
+            color: rgba(15, 23, 42, 1) !important; z-index: -1; pointer-events: none;
         }
 
         .container { width: 100%; max-width: 550px; padding: 40px 20px; box-sizing: border-box; }
 
       .card-panel { 
     /* Bajamos la opacidad al 15% para que sea casi un fantasma */
-            background: rgba(255, 255, 255, 0.01) !important; 
+            background: rgba(255, 255, 255, 0.005) !important; 
     
     /* Bajamos el desenfoque para que la letra de atrás no se borre */
             backdrop-filter: blur(5px) !important; 
@@ -37,15 +37,15 @@
             border-radius: 30px; 
             padding: 30px; 
     /* Una sombra muy suave para que el panel no "desaparezca" del todo */
-            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.05); 
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.005); 
             text-align: center; 
     /* Un borde un poco más marcado para que se vea dónde termina el panel */
-            border: 1px solid rgba(255, 255, 255, 0.4); 
+            border: 1px solid rgba(255, 255, 255, 0.04); 
 }
 
         .resource-row {
             display: flex; align-items: center; justify-content: space-between;
-            padding: 15px; background: rgba(255,255,255,0.4); border-radius: 20px;
+            padding: 15px; background: rgba(255,255,255,0.04); border-radius: 20px;
             margin-bottom: 12px; text-align: left;
         }
 
@@ -56,13 +56,13 @@
         .btn-repasar { background: var(--accent); color: white; }
         .btn-test { background: var(--primary); color: white; }
 
-        .flashcard-box { min-height: 180px; display: flex; flex-direction: column; justify-content: center; align-items: center; background: rgba(255,255,255,0.2); border-radius: 25px; padding: 25px; margin: 20px 0; cursor: pointer; border: 1px solid rgba(255,255,255,0.3); }
+        .flashcard-box { min-height: 180px; display: flex; flex-direction: column; justify-content: center; align-items: center; background: rgba(255,255,255,0.05); border-radius: 25px; padding: 25px; margin: 20px 0; cursor: pointer; border: 1px solid rgba(255,255,255,0.03); }
         .flashcard-q { font-size: 1.6rem; font-weight: 600; color: var(--primary); }
         .flashcard-a { display: none; margin-top: 15px; font-size: 1.3rem; color: var(--accent); border-top: 1px solid rgba(0,0,0,0.1); padding-top: 15px; width: 100%; }
 
         .hidden { display: none !important; }
         
-        #writing-area { margin-top: 20px; padding: 15px; background: rgba(255,255,255,0.3); border-radius: 20px; }
+        #writing-area { margin-top: 20px; padding: 15px; background: rgba(255,255,255,0.05); border-radius: 20px; }
         #write-input { width: 100%; padding: 12px; border-radius: 10px; border: 1px solid rgba(0,0,0,0.1); box-sizing: border-box; text-align: center; font-size: 1rem; margin-bottom: 10px; }
     </style>
 </head>
