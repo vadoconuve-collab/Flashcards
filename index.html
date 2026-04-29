@@ -11,7 +11,8 @@
             --primary: #0F172A; 
             --accent: #3B82F6;  
             --bg: #F0F4F8;
-            --white-glass: rgba(255, 255, 255, 0.35);
+            /* Transparencia muy alta para ver la marca de agua */
+            --white-glass: rgba(255, 255, 255, 0.25); 
         }
 
         body { margin: 0; padding: 0; font-family: 'Inter', sans-serif; background-color: var(--bg); display: flex; justify-content: center; min-height: 100vh; background-attachment: fixed; }
@@ -20,75 +21,90 @@
             content: "Angy the teacher"; position: fixed; top: 50%; left: 50%;
             transform: translate(-50%, -50%) rotate(-15deg);
             font-family: 'Dancing Script', cursive; font-size: 12vw; 
-            color: rgba(15, 23, 42, 0.08); z-index: -1; pointer-events: none;
+            color: rgba(15, 23, 42, 0.12) !important; z-index: -1; pointer-events: none;
         }
 
-        .container { width: 100%; max-width: 500px; padding: 40px 20px; box-sizing: border-box; }
+        .container { width: 100%; max-width: 550px; padding: 40px 20px; box-sizing: border-box; }
 
-        .card-panel { background: var(--white-glass); backdrop-filter: blur(12px); border-radius: 30px; padding: 40px; box-shadow: 0 10px 30px rgba(0,0,0,0.08); text-align: center; border: 1px solid rgba(255,255,255,0.3); }
+        .card-panel { 
+            background: var(--white-glass) !important; 
+            backdrop-filter: blur(15px) !important; 
+            -webkit-backdrop-filter: blur(15px);
+            border-radius: 30px; padding: 30px; 
+            box-shadow: 0 10px 30px rgba(0,0,0,0.05); 
+            text-align: center; border: 1px solid rgba(255,255,255,0.4); 
+        }
 
-        .login-input { width: 100%; padding: 16px; margin-bottom: 12px; border: 1px solid rgba(0,0,0,0.05); border-radius: 15px; background: rgba(255,255,255,0.6); }
+        .resource-row {
+            display: flex; align-items: center; justify-content: space-between;
+            padding: 15px; background: rgba(255,255,255,0.4); border-radius: 20px;
+            margin-bottom: 12px; text-align: left;
+        }
 
-        .btn-primary { background: var(--primary); color: white; padding: 16px; border: none; border-radius: 15px; width: 100%; font-weight: 600; cursor: pointer; font-family: 'Poppins', sans-serif; }
+        .btn-primary { background: var(--primary); color: white; padding: 14px; border: none; border-radius: 12px; width: 100%; font-weight: 600; cursor: pointer; font-family: 'Poppins', sans-serif; transition: 0.3s; }
+        .btn-primary:hover { transform: scale(1.02); background: #000; }
 
-        .tab-item { flex: 1; padding: 10px; background: rgba(0,0,0,0.05); border-radius: 12px; font-size: 0.8rem; font-weight: 600; cursor: pointer; color: #64748B; }
-        .tab-item.active { background: var(--accent); color: white; }
+        .btn-small { padding: 8px 12px; font-size: 0.75rem; border-radius: 8px; border: none; cursor: pointer; font-weight: 600; margin-left: 5px; }
+        .btn-repasar { background: var(--accent); color: white; }
+        .btn-test { background: var(--primary); color: white; }
 
-        .flashcard-box { min-height: 180px; display: flex; flex-direction: column; justify-content: center; align-items: center; background: rgba(255,255,255,0.3); border-radius: 25px; padding: 25px; margin: 20px 0; cursor: pointer; }
+        .flashcard-box { min-height: 180px; display: flex; flex-direction: column; justify-content: center; align-items: center; background: rgba(255,255,255,0.2); border-radius: 25px; padding: 25px; margin: 20px 0; cursor: pointer; border: 1px solid rgba(255,255,255,0.3); }
         .flashcard-q { font-size: 1.6rem; font-weight: 600; color: var(--primary); }
         .flashcard-a { display: none; margin-top: 15px; font-size: 1.3rem; color: var(--accent); border-top: 1px solid rgba(0,0,0,0.1); padding-top: 15px; width: 100%; }
 
         .hidden { display: none !important; }
         
-        #writing-area { margin-top: 20px; padding: 15px; background: rgba(255,255,255,0.2); border-radius: 20px; }
-        #write-input { width: 100%; padding: 12px; border-radius: 10px; border: 1px solid #ccc; box-sizing: border-box; text-align: center; }
+        #writing-area { margin-top: 20px; padding: 15px; background: rgba(255,255,255,0.3); border-radius: 20px; }
+        #write-input { width: 100%; padding: 12px; border-radius: 10px; border: 1px solid rgba(0,0,0,0.1); box-sizing: border-box; text-align: center; font-size: 1rem; margin-bottom: 10px; }
     </style>
 </head>
 <body>
 
 <div class="container">
     <div id="view-login" class="card-panel">
-        <h2>Angy the teacher</h2>
-        <input type="text" id="user-name" class="login-input" placeholder="Tu nombre">
-        <input type="password" id="user-pass" class="login-input" placeholder="Tu contraseña">
+        <h2 style="font-family: 'Poppins';">Angy the teacher</h2>
+        <p style="color: #64748B; font-size: 0.9rem;">Aula Virtual Premium</p>
+        <input type="text" id="user-name" style="width:100%; padding:15px; margin-bottom:10px; border-radius:12px; border:1px solid #ddd;" placeholder="Tu nombre">
+        <input type="password" id="user-pass" style="width:100%; padding:15px; margin-bottom:20px; border-radius:12px; border:1px solid #ddd;" placeholder="Contraseña">
         <button class="btn-primary" onclick="handleLogin()">Entrar</button>
     </div>
 
     <div id="view-dashboard" class="hidden">
         <div class="card-panel">
-            <h2 id="student-display"></h2>
-            <div style="display: flex; gap: 8px; margin-bottom: 25px;">
-                <div class="tab-item active" onclick="switchTab('flashcards', this)">🎴 Repaso</div>
-                <div class="tab-item" onclick="switchTab('lecturas', this)">📖 Leer</div>
-                <div class="tab-item" onclick="switchTab('videos', this)">🎥 Ver</div>
-            </div>
-            <div id="content-flashcards" class="tab-content"></div>
-            <div id="content-lecturas" class="tab-content hidden"></div>
-            <div id="content-videos" class="tab-content hidden"></div>
-            <button class="btn-primary" style="margin-top: 30px;" onclick="location.reload()">Salir</button>
+            <h2 id="student-display" style="text-align: left; font-size: 1.4rem; margin-bottom: 20px;"></h2>
+            <div id="content-flashcards"></div>
+            <button class="btn-primary" style="margin-top: 30px; background: #64748B;" onclick="location.reload()">Cerrar Sesión</button>
         </div>
     </div>
 
     <div id="view-study" class="hidden">
         <div class="card-panel">
-            <h3 id="study-topic"></h3>
-            <div class="flashcard-box" onclick="document.getElementById('flash-a').style.display='block'">
+            <h3 id="study-topic" style="color: #64748B; font-size: 1rem;"></h3>
+            <div id="study-progress" style="font-size: 0.7rem; color: #94A3B8;"></div>
+            
+            <div class="flashcard-box" onclick="showAnswer()">
                 <div id="flash-q" class="flashcard-q"></div>
                 <div id="flash-a" class="flashcard-a"></div>
             </div>
+
             <div id="writing-area" class="hidden">
-                <input type="text" id="write-input" placeholder="Escribe aquí...">
-                <button class="btn-primary" style="margin-top:10px" onclick="checkWriting()">Comprobar</button>
-                <div id="write-feedback" style="margin-top:10px; font-weight:600"></div>
+                <input type="text" id="write-input" placeholder="Escribe la respuesta...">
+                <button class="btn-primary" onclick="checkWriting()">Comprobar</button>
+                <div id="write-feedback" style="margin-top:10px; font-weight:600;"></div>
             </div>
-            <button class="btn-primary" style="margin-top:20px" onclick="exitStudy()">Volver al menú</button>
+
+            <div style="display: flex; gap: 10px; margin-top: 20px;">
+                <button class="btn-primary" style="background: #94A3B8;" onclick="moveCard(-1)">Anterior</button>
+                <button class="btn-primary" onclick="moveCard(1)">Siguiente</button>
+            </div>
+            <button class="btn-primary" style="background: transparent; color: #64748B; border: 1px solid #ddd; margin-top: 15px;" onclick="exitStudy()">Volver</button>
         </div>
     </div>
 </div>
 
 <script>
     const SHEETS_URL = "https://docs.google.com/spreadsheets/d/e/2PACX-1vThhYdCFgB1S2jQEhtXtyTaDh4NfNPa8XSkvPkIAvtr2No8Z1z3TYcCjxSqDT3kdnOSa2JMmnU8FP_1/pub?output=csv";
-    let db = [], items = { flashcards: {}, readings: [], videos: [] }, mazo = [], idx = 0, esModoVerbo = false;
+    let db = [], items = { flashcards: {} }, mazo = [], idx = 0, modoTest = false;
 
     window.onload = () => Papa.parse(SHEETS_URL, { download: true, complete: (res) => db = res.data });
 
@@ -96,53 +112,84 @@
         const u = document.getElementById('user-name').value.trim().toLowerCase();
         const p = document.getElementById('user-pass').value.trim();
         const rows = db.filter(r => r[3]?.toLowerCase() === u && r[4] === p);
+        
         if (rows.length) {
             document.getElementById('view-login').classList.add('hidden');
             document.getElementById('view-dashboard').classList.remove('hidden');
             document.getElementById('student-display').innerText = "Hola, " + rows[0][3];
+            
             rows.forEach(r => {
-                const t = (r[5] || "").toLowerCase();
-                if (t === "lectura") items.readings.push({t:r[0], l:r[1], c:r[2]});
-                else if (t === "video") items.videos.push({t:r[0], l:r[1], c:r[2]});
-                else {
+                if ((r[5] || "").toLowerCase() === "flashcard") {
                     if (!items.flashcards[r[2]]) items.flashcards[r[2]] = [];
                     items.flashcards[r[2]].push({q:r[0], a:r[1]});
                 }
             });
             render();
-        } else alert("Datos incorrectos");
+        } else alert("Error de acceso");
     }
 
     function render() {
-        Object.keys(items.flashcards).forEach(c => document.getElementById('content-flashcards').innerHTML += `<div style="margin-bottom:10px; padding:15px; background:rgba(255,255,255,0.3); border-radius:15px; display:flex; justify-content:space-between"><span>${c}</span><button onclick="startStudy('${c}')">Repasar</button></div>`);
+        const container = document.getElementById('content-flashcards');
+        container.innerHTML = "";
+        Object.keys(items.flashcards).forEach(cat => {
+            container.innerHTML += `
+                <div class="resource-row">
+                    <span style="font-weight:600; font-size:0.9rem;">${cat}</span>
+                    <div>
+                        <button class="btn-small btn-repasar" onclick="startStudy('${cat}', false)">Repaso</button>
+                        <button class="btn-small btn-test" onclick="startStudy('${cat}', true)">Test</button>
+                    </div>
+                </div>`;
+        });
     }
 
-    function switchTab(id, el) {
-        document.querySelectorAll('.tab-content, .tab-item').forEach(e => e.classList.remove('active', 'hidden'));
-        document.getElementById('content-'+id).classList.remove('hidden'); el.classList.add('active');
-    }
+    function startStudy(cat, isTest) {
+        mazo = [...items.flashcards[cat]].sort(() => Math.random() - 0.5);
+        idx = 0; modoTest = isTest;
+        const esVerbo = cat.toLowerCase().includes("verbo");
 
-    function startStudy(c) {
-        mazo = items.flashcards[c]; idx = 0;
-        esModoVerbo = c.toLowerCase().includes("verbos");
         document.getElementById('view-dashboard').classList.add('hidden');
         document.getElementById('view-study').classList.remove('hidden');
-        document.getElementById('study-topic').innerText = c;
-        if(esModoVerbo) document.getElementById('writing-area').classList.remove('hidden');
+        document.getElementById('study-topic').innerText = cat + (modoTest ? " (Modo Test)" : " (Modo Repaso)");
+        
+        // El área de escritura solo sale en modo Test Y si es un Verbo
+        if (modoTest && esVerbo) {
+            document.getElementById('writing-area').classList.remove('hidden');
+        } else {
+            document.getElementById('writing-area').classList.add('hidden');
+        }
+        
         updateCard();
     }
 
     function updateCard() {
         document.getElementById('flash-q').innerText = mazo[idx].q;
         document.getElementById('flash-a').innerText = mazo[idx].a;
-        document.getElementById('flash-a').style.display = esModoVerbo ? "none" : "none";
+        document.getElementById('flash-a').style.display = "none";
+        document.getElementById('write-feedback').innerText = "";
+        document.getElementById('write-input').value = "";
+        document.getElementById('study-progress').innerText = `Tarjeta ${idx + 1} de ${mazo.length}`;
+    }
+
+    function showAnswer() { 
+        if (!modoTest || (modoTest && !document.getElementById('study-topic').innerText.toLowerCase().includes("verbo"))) {
+            document.getElementById('flash-a').style.display = "block"; 
+        }
     }
 
     function checkWriting() {
-        const val = document.getElementById('write-input').value.trim().toLowerCase();
-        document.getElementById('write-feedback').innerText = val === mazo[idx].a.toLowerCase() ? "¡Correcto! ✨" : "Inténtalo otra vez";
+        const userVal = document.getElementById('write-input').value.trim().toLowerCase();
+        const correctVal = mazo[idx].a.toLowerCase();
+        const feed = document.getElementById('write-feedback');
+        if (userVal === correctVal) {
+            feed.innerText = "¡Excelente! ✨"; feed.style.color = "green";
+            setTimeout(() => moveCard(1), 1000);
+        } else {
+            feed.innerText = "Respuesta: " + mazo[idx].a; feed.style.color = "red";
+        }
     }
 
+    function moveCard(d) { idx = (idx + d + mazo.length) % mazo.length; updateCard(); }
     function exitStudy() { document.getElementById('view-study').classList.add('hidden'); document.getElementById('view-dashboard').classList.remove('hidden'); }
 </script>
 </body>
