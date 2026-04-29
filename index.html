@@ -10,10 +10,10 @@
         :root {
             --primary: #0F172A; 
             --accent: #3B82F6;  
-            --bg: #F8FAFC;      
-            --white: #FFFFFF;
-            --text-main: #334155;
-            --shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.05), 0 10px 10px -5px rgba(0, 0, 0, 0.02);
+            --bg: #F0F4F8; /* Un gris azulado muy suave para que resalte la transparencia */
+            --white-glass: rgba(255, 255, 255, 0.88); /* Blanco semitransparente */
+            --text-main: #1E293B;
+            --shadow: 0 10px 30px rgba(0, 0, 0, 0.08);
         }
 
         body {
@@ -22,73 +22,90 @@
             background-color: var(--bg);
             color: var(--text-main);
             display: flex; justify-content: center;
-            min-height: 100vh; overflow-x: hidden;
+            min-height: 100vh;
+            /* Evitamos que el scroll mueva la marca de agua */
+            background-attachment: fixed;
         }
 
-        /* Marca de agua elegante */
-        body::after {
+        /* MARCA DE AGUA GLOBAL (Visible en todas las pantallas) */
+        body::before {
             content: "Angy the teacher";
-            position: fixed; top: 50%; left: 50%;
+            position: fixed; 
+            top: 50%; left: 50%;
             transform: translate(-50%, -50%) rotate(-15deg);
             font-family: 'Dancing Script', cursive;
-            font-size: 10vw; color: rgba(15, 23, 42, 0.02);
-            z-index: -1; pointer-events: none; white-space: nowrap;
+            font-size: 12vw; 
+            color: rgba(15, 23, 42, 0.05); /* Un pelín más visible para que se note tras el cristal */
+            z-index: -1; 
+            pointer-events: none; 
+            white-space: nowrap;
         }
 
-        .container { width: 100%; max-width: 600px; padding: 40px 20px; box-sizing: border-box; z-index: 1; }
+        .container { width: 100%; max-width: 500px; padding: 40px 20px; box-sizing: border-box; }
 
+        /* EFECTO CRISTAL (Semitransparente) */
         .card-panel {
-            background: var(--white); border-radius: 24px;
-            padding: 40px; box-shadow: var(--shadow);
-            text-align: center; transition: all 0.4s ease;
+            background: var(--white-glass); 
+            backdrop-filter: blur(8px); /* Efecto de desenfoque tras el panel */
+            border-radius: 30px;
+            padding: 40px; 
+            box-shadow: var(--shadow);
+            text-align: center;
+            border: 1px solid rgba(255, 255, 255, 0.3);
         }
 
         h1, h2 { font-family: 'Poppins', sans-serif; color: var(--primary); margin: 0; }
         
         .login-input {
             width: 100%; padding: 16px; margin-bottom: 12px;
-            border: 1px solid #E2E8F0; border-radius: 12px;
+            border: 1px solid rgba(0,0,0,0.05); border-radius: 15px;
             font-size: 1rem; outline: none; box-sizing: border-box;
+            background: rgba(255,255,255,0.5);
         }
 
         .btn-primary {
             background: var(--primary); color: white; padding: 16px;
-            border: none; border-radius: 12px; width: 100%;
+            border: none; border-radius: 15px; width: 100%;
             font-weight: 600; cursor: pointer; transition: 0.3s;
+            font-family: 'Poppins', sans-serif;
         }
 
-        .btn-primary:hover { transform: translateY(-2px); background: #1E293B; }
+        .btn-primary:hover { background: #000; transform: translateY(-2px); }
 
-        .nav-tabs { display: flex; gap: 10px; margin-bottom: 25px; }
+        .nav-tabs { display: flex; gap: 8px; margin-bottom: 25px; }
         .tab-item {
-            flex: 1; padding: 12px; background: #E2E8F0; border-radius: 10px;
-            font-size: 0.85rem; font-weight: 600; cursor: pointer;
-            text-align: center; color: #64748B; transition: 0.3s;
+            flex: 1; padding: 10px; background: rgba(0,0,0,0.05); border-radius: 12px;
+            font-size: 0.8rem; font-weight: 600; cursor: pointer;
+            text-align: center; color: #64748B;
         }
         .tab-item.active { background: var(--accent); color: white; }
 
         .resource-row {
             display: flex; align-items: center; justify-content: space-between;
-            padding: 20px; background: #F1F5F9; border-radius: 16px;
-            margin-bottom: 12px; text-align: left;
+            padding: 15px; background: rgba(255,255,255,0.4); border-radius: 20px;
+            margin-bottom: 10px; text-align: left;
+            border: 1px solid rgba(255,255,255,0.2);
         }
 
         .btn-action {
-            background: var(--white); border: 1px solid #E2E8F0;
-            padding: 8px 16px; border-radius: 8px; font-weight: 600; cursor: pointer;
+            background: var(--white-glass); border: 1px solid #E2E8F0;
+            padding: 8px 14px; border-radius: 10px; font-weight: 600; cursor: pointer; font-size: 0.8rem;
         }
 
+        /* TARJETAS SEMITRANSPARENTES EN EL ESTUDIO */
         .flashcard-box {
             min-height: 200px; display: flex; flex-direction: column;
             justify-content: center; align-items: center;
-            background: #F8FAFC; border: 2px solid #F1F5F9;
-            border-radius: 20px; padding: 30px; margin: 20px 0; cursor: pointer;
+            background: rgba(255,255,255,0.3); 
+            border: 1px solid rgba(255,255,255,0.4);
+            border-radius: 25px; padding: 25px; margin: 20px 0; cursor: pointer;
+            transition: 0.3s;
         }
 
         .flashcard-q { font-size: 1.8rem; font-weight: 600; color: var(--primary); }
-        .flashcard-a { display: none; margin-top: 20px; font-size: 1.4rem; color: var(--accent); border-top: 1px solid #CBD5E1; padding-top: 20px; width: 100%; }
+        .flashcard-a { display: none; margin-top: 15px; font-size: 1.4rem; color: var(--accent); border-top: 1px solid rgba(0,0,0,0.1); padding-top: 15px; width: 100%; }
 
-        .video-wrapper { position: relative; padding-bottom: 56.25%; height: 0; border-radius: 16px; overflow: hidden; margin-top: 15px; }
+        .video-wrapper { position: relative; padding-bottom: 56.25%; height: 0; border-radius: 20px; overflow: hidden; margin-top: 15px; }
         .video-wrapper iframe { position: absolute; top: 0; left: 0; width: 100%; height: 100%; border: 0; }
 
         .hidden { display: none; }
@@ -98,37 +115,149 @@
 
 <div class="container">
     <div id="view-login" class="card-panel">
-        <h1 style="font-size: 0.9rem; letter-spacing: 2px; color: #64748B; text-transform: uppercase;">Aula Virtual</h1>
-        <h2 style="font-size: 2.2rem; margin-bottom: 30px;">Angy the teacher</h2>
-        <input type="text" id="user-name" class="login-input" placeholder="Nombre">
-        <input type="password" id="user-pass" class="login-input" placeholder="Contraseña">
-        <button class="btn-primary" onclick="handleLogin()">Entrar</button>
+        <h2 style="font-size: 2rem; margin-bottom: 10px;">Angy the teacher</h2>
+        <p style="font-size: 0.9rem; color: #64748B; margin-bottom: 30px;">Acceso al Aula Virtual</p>
+        <input type="text" id="user-name" class="login-input" placeholder="Tu nombre">
+        <input type="password" id="user-pass" class="login-input" placeholder="Tu contraseña">
+        <button class="btn-primary" onclick="handleLogin()">Entrar ahora</button>
     </div>
 
     <div id="view-dashboard" class="hidden">
         <div class="card-panel">
-            <h2 id="student-name" style="text-align: left; margin-bottom: 20px;"></h2>
+            <h2 id="student-display" style="text-align: left; margin-bottom: 20px; font-size: 1.5rem;"></h2>
             <div class="nav-tabs">
-                <div class="tab-item active" onclick="switchTab('flashcards', this)">🎴 Flashcards</div>
-                <div class="tab-item" onclick="switchTab('lecturas', this)">📖 Lecturas</div>
-                <div class="tab-item" onclick="switchTab('videos', this)">🎥 Vídeos</div>
+                <div class="tab-btn tab-item active" onclick="switchTab('flashcards', this)">🎴 Repaso</div>
+                <div class="tab-btn tab-item" onclick="switchTab('lecturas', this)">📖 Leer</div>
+                <div class="tab-btn tab-item" onclick="switchTab('videos', this)">🎥 Ver</div>
             </div>
             <div id="content-flashcards" class="tab-content"></div>
             <div id="content-lecturas" class="tab-content hidden"></div>
             <div id="content-videos" class="tab-content hidden"></div>
-            <button class="btn-primary" style="background: #64748B; margin-top: 30px;" onclick="location.reload()">Cerrar Sesión</button>
+            <button class="btn-primary" style="background: #64748B; margin-top: 40px; font-size: 0.8rem; padding: 12px;" onclick="location.reload()">Cerrar Sesión</button>
         </div>
     </div>
 
     <div id="view-study" class="hidden">
         <div class="card-panel">
-            <h3 id="study-topic">Estudio</h3>
-            <div id="study-progress" style="font-size: 0.8rem; color: #94A3B8; margin-bottom: 10px;"></div>
-            <div class="flashcard-box" onclick="document.getElementById('flash-a').style.display='block'">
+            <h3 id="study-topic" style="font-size: 1.2rem; color: #64748B;"></h3>
+            <div id="study-progress" style="font-size: 0.75rem; color: #94A3B8; margin-bottom: 10px;"></div>
+            <div class="flashcard-box" onclick="showAnswer()">
                 <div id="flash-q" class="flashcard-q"></div>
                 <div id="flash-a" class="flashcard-a"></div>
             </div>
             <div id="writing-area" class="hidden">
-                <input type="text" id="write-input" class="login-input" style="text-align: center;" placeholder="Escribe aquí...">
-                <div id="write-feedback" style="margin-bottom: 10px; font-weight: 600;"></div>
-                <button class="btn
+                <input type="text" id="write-input" class="login-input" style="text-align: center; background: white;" placeholder="Escribe aquí...">
+                <div id="write-feedback" style="margin-bottom: 15px; font-weight: 600; font-size: 1rem;"></div>
+                <button class="btn-primary" onclick="checkWriting()">Validar Respuesta</button>
+            </div>
+            <div style="display: flex; gap: 10px; margin-top: 25px;">
+                <button class="btn-primary" style="background: #94A3B8; padding: 12px;" onclick="moveCard(-1)">⬅️</button>
+                <button class="btn-primary" style="padding: 12px;" onclick="moveCard(1)">Siguiente ➡️</button>
+            </div>
+            <button class="btn-primary" style="background: transparent; color: #64748B; border: 1px solid rgba(0,0,0,0.1); margin-top: 20px; font-size: 0.85rem;" onclick="exitStudy()">Volver al menú</button>
+        </div>
+    </div>
+</div>
+
+<script>
+    const SHEETS_URL = "https://docs.google.com/spreadsheets/d/e/2PACX-1vThhYdCFgB1S2jQEhtXtyTaDh4NfNPa8XSkvPkIAvtr2No8Z1z3TYcCjxSqDT3kdnOSa2JMmnU8FP_1/pub?output=csv";
+    let db = [];
+    let studentItems = { flashcards: {}, readings: [], videos: [] };
+    let mazo = [];
+    let currentIdx = 0;
+    let isVerbo = false;
+
+    window.onload = () => {
+        Papa.parse(SHEETS_URL, { 
+            download: true, 
+            complete: (results) => { db = results.data; } 
+        });
+    };
+
+    function handleLogin() {
+        const u = document.getElementById('user-name').value.trim().toLowerCase();
+        const p = document.getElementById('user-pass').value.trim();
+        if(!db.length) { alert("Cargando base de datos..."); return; }
+        const rows = db.filter(r => r[3] && r[3].toLowerCase() === u && r[4] === p);
+        if (rows.length > 0) {
+            document.getElementById('view-login').classList.add('hidden');
+            document.getElementById('view-dashboard').classList.remove('hidden');
+            document.getElementById('student-display').innerText = "¡Hola, " + rows[0][3] + "!";
+            organizeData(rows);
+        } else {
+            alert("Nombre o contraseña incorrectos.");
+        }
+    }
+
+    function organizeData(rows) {
+        studentItems = { flashcards: {}, readings: [], videos: [] };
+        rows.forEach(r => {
+            const type = (r[5] || "Flashcard").trim().toLowerCase();
+            if (type === "lectura") studentItems.readings.push({ t: r[0], l: r[1], cat: r[2] });
+            else if (type === "video") studentItems.videos.push({ t: r[0], l: r[1], cat: r[2] });
+            else {
+                const cat = r[2] || "General";
+                if (!studentItems.flashcards[cat]) studentItems.flashcards[cat] = [];
+                studentItems.flashcards[cat].push({ q: r[0], a: r[1] });
+            }
+        });
+        renderDashboard();
+    }
+
+    function renderDashboard() {
+        const f = document.getElementById('content-flashcards'); f.innerHTML = "";
+        Object.keys(studentItems.flashcards).forEach(cat => {
+            f.innerHTML += `<div class="resource-row"><div><h4 style="margin:0">${cat}</h4><span style="font-size:0.75rem">${studentItems.flashcards[cat].length} unidades</span></div>
+            <button class="btn-action" onclick="startStudy('${cat}')">Repasar</button></div>`;
+        });
+        document.getElementById('content-lecturas').innerHTML = studentItems.readings.map(l => 
+            `<div class="resource-row"><div><h4 style="margin:0">${l.t}</h4><span style="font-size:0.75rem">${l.cat}</span></div><button class="btn-action" onclick="window.open('${l.l}')">Abrir</button></div>`
+        ).join('') || "<p style='font-size:0.8rem; opacity:0.6'>No hay lecturas hoy.</p>";
+        document.getElementById('content-videos').innerHTML = studentItems.videos.map(v => {
+            const id = v.l.split('v=')[1]?.split('&')[0] || v.l.split('/').pop();
+            return `<div style="margin-bottom:25px;text-align:left"><h4 style="font-size:0.9rem; margin-bottom:10px">${v.t}</h4><div class="video-wrapper"><iframe src="https://www.youtube.com/embed/${id}"></iframe></div></div>`;
+        }).join('') || "<p style='font-size:0.8rem; opacity:0.6'>No hay vídeos hoy.</p>";
+    }
+
+    function switchTab(type, el) {
+        document.querySelectorAll('.tab-content').forEach(c => c.classList.add('hidden'));
+        document.querySelectorAll('.tab-btn').forEach(t => t.classList.remove('active'));
+        document.getElementById('content-' + type).classList.remove('hidden');
+        el.classList.add('active');
+    }
+
+    function startStudy(cat) {
+        mazo = [...studentItems.flashcards[cat]].sort(() => Math.random() - 0.5);
+        currentIdx = 0;
+        isVerbo = cat.toLowerCase().includes("verbos");
+        document.getElementById('view-dashboard').classList.add('hidden');
+        document.getElementById('view-study').classList.remove('hidden');
+        document.getElementById('study-topic').innerText = cat;
+        document.getElementById('writing-area').className = isVerbo ? "" : "hidden";
+        updateCard();
+    }
+
+    function updateCard() {
+        document.getElementById('flash-q').innerText = mazo[currentIdx].q;
+        document.getElementById('flash-a').innerText = mazo[currentIdx].a;
+        document.getElementById('flash-a').style.display = "none";
+        document.getElementById('study-progress').innerText = `REPASANDO ${currentIdx + 1} DE ${mazo.length}`;
+        document.getElementById('write-feedback').innerText = "";
+        document.getElementById('write-input').value = "";
+    }
+
+    function showAnswer() { if(!isVerbo) document.getElementById('flash-a').style.display = "block"; }
+
+    function checkWriting() {
+        const val = document.getElementById('write-input').value.trim().toLowerCase();
+        const correct = mazo[currentIdx].a.trim().toLowerCase();
+        const feed = document.getElementById('write-feedback');
+        if (val === correct) { feed.innerText = "¡Excelente! ✨"; feed.style.color = "green"; setTimeout(() => moveCard(1), 800); }
+        else { feed.innerText = "Respuesta: " + mazo[currentIdx].a; feed.style.color = "#E11D48"; }
+    }
+
+    function moveCard(d) { currentIdx = (currentIdx + d + mazo.length) % mazo.length; updateCard(); }
+    function exitStudy() { document.getElementById('view-study').classList.add('hidden'); document.getElementById('view-dashboard').classList.remove('hidden'); }
+</script>
+</body>
+</html>
