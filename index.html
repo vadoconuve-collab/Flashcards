@@ -95,6 +95,10 @@
     <div id="view-dashboard" class="hidden">
         <div class="card-panel">
             <h2 id="student-display" style="text-align: left; font-size: 1.5rem; margin-bottom: 25px;"></h2>
+            <div id="stats-estudiante" style="margin-top: 15px; padding: 10px; background: rgba(255,255,255,0.2); border-radius: 15px; display: flex; justify-content: space-around; align-items: center;">
+    <div><span style="font-size: 1.2rem;">🏆</span> <span id="puntos-valor" style="font-weight: 600;">0</span> pts</div>
+    <div><span style="font-size: 1.2rem;">⭐</span> <span id="nivel-texto" style="font-weight: 600; color: var(--accent);">Novato</span></div>
+</div>
             
             <div class="nav-tabs">
                 <div class="tab-btn tab-item active" onclick="switchTab('flashcards', this)">🎴 Mazos</div>
@@ -143,7 +147,7 @@
 
 <script>
     const SHEETS_URL = "https://docs.google.com/spreadsheets/d/e/2PACX-1vThhYdCFgB1S2jQEhtXtyTaDh4NfNPa8XSkvPkIAvtr2No8Z1z3TYcCjxSqDT3kdnOSa2JMmnU8FP_1/pub?output=csv";
-let db = [], items = { flashcards: {}, readings: [], videos: [], reto: null }, mazo = [], idx = 0, modoTest = false;
+let db = [], items = { flashcards: {}, readings: [], videos: [], reto: null }, mazo = [], idx = 0, modoTest = false, puntos = 0;
 // --- MÓDULO DE GAMIFICACIÓN ---
 function actualizarRacha() {
     const hoy = new Date().toLocaleDateString();
@@ -267,17 +271,36 @@ function actualizarRacha() {
         }
     }
 
-    function checkWriting() {
-        const val = document.getElementById('write-input').value.trim().toLowerCase();
-        const correct = mazo[idx].a.toLowerCase();
-        const feed = document.getElementById('write-feedback');
-        if (val === correct) {
-            feed.innerText = "¡Correcto! ✨"; feed.style.color = "#10B981";
-            setTimeout(() => moveCard(1), 1000);
-        } else {
-            feed.innerText = "Ups! Era: " + mazo[idx].a; feed.style.color = "#EF4444";
-        }
+function checkWriting() {
+    const val = document.getElementById('write-input').value.trim().toLowerCase();
+    const correct = mazo[idx].a.toLowerCase();
+    const feed = document.getElementById('write-feedback');
+    
+    if (val === correct) {
+        feed.innerText = "¡Correcto! +10 pts ✨"; 
+        feed.style.color = "#10B981";
+        
+        // --- SUMAR PUNTOS ---
+        puntos += 10;
+        document.getElementById('puntos-valor').innerText = puntos;
+        actualizarNivel();
+        // --------------------
+
+        setTimeout(() => moveCard(1), 1000);
+    } else {
+        feed.innerText = "Ups! Era: " + mazo[idx].a; 
+        feed.style.color = "#EF4444";
     }
+}
+
+function actualizarNivel() {
+    let nivel = "Beginner Explorer 🥚";
+    if (puntos >= 50) nivel = "Word Hunter 🏹";
+    if (puntos >= 150) nivel = "Grammar Ninja 🥷";
+    if (puntos >= 300) nivel = "Language Master 👑";
+    
+    document.getElementById('nivel-texto').innerText = nivel;
+}
 
     function moveCard(d) { idx = (idx + d + mazo.length) % mazo.length; updateCard(); }
     function exitStudy() { document.getElementById('view-study').classList.add('hidden'); document.getElementById('view-dashboard').classList.remove('hidden'); }
