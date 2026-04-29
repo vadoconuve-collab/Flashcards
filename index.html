@@ -21,20 +21,31 @@
             content: "Angy the teacher"; position: fixed; top: 50%; left: 50%;
             transform: translate(-50%, -50%) rotate(-15deg);
             font-family: 'Dancing Script', cursive; font-size: 12vw; 
-            color: rgba(15, 23, 42, 0.25) !important; z-index: -1; pointer-events: none;
+            color: rgba(15, 23, 42, 0.55) !important; z-index: -1; pointer-events: none;
             white-space: nowrap;
         }
 
         .container { width: 100%; max-width: 550px; padding: 40px 20px; box-sizing: border-box; }
 
-        /* PANEL CRISTALINO */
+/* PANEL CRISTALINO FORZADO */
         .card-panel { 
-            background: var(--glass) !important; 
-            backdrop-filter: blur(4px) !important; 
-            -webkit-backdrop-filter: blur(4px);
-            border-radius: 30px; padding: 30px; 
+            /* Fondo ultra-transparente al 10% (0.1) - !important para prioridad máxima */
+            background: rgba(255, 255, 255, 0.10) !important; 
+            
+            /* Efecto de cristal desenfocado - !important para prioridad máxima */
+            backdrop-filter: blur(8px) !important; 
+            -webkit-backdrop-filter: blur(8px); /* Para Safari y iPhones */
+            
+            border-radius: 30px; 
+            padding: 30px; 
+            
+            /* Sombra muy suave para que el panel no desaparezca */
             box-shadow: 0 4px 20px rgba(0, 0, 0, 0.03); 
-            text-align: center; border: 1px solid rgba(255, 255, 255, 0.4); 
+            
+            text-align: center; 
+            
+            /* Un borde un poco más marcado para que se vea donde termina el panel */
+            border: 1px solid rgba(255, 255, 255, 0.5) !important; 
         }
 
         .nav-tabs { display: flex; gap: 8px; margin-bottom: 25px; }
