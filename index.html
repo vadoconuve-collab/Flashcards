@@ -10,7 +10,7 @@
         :root {
             --primary: #0F172A; 
             --accent: #3B82F6;  
-            --bg: #F0F4F8; /* Un gris azulado muy suave para que resalte la transparencia */
+            --bg: #F8FAFC; /* Un fondo muy clarito */
             --white-glass: rgba(255, 255, 255, 0.02); /* Blanco semitransparente */
             --text-main: #1E293B;
             --shadow: 0 10px 30px rgba(0, 0, 0, 0.08);
@@ -45,11 +45,11 @@
 
         /* EFECTO CRISTAL (Semitransparente) */
         .card-panel {
-            background: var(--white-glass); 
+            background: var(--white-glass) !important; 
             backdrop-filter: blur(8px); /* Efecto de desenfoque tras el panel */
             border-radius: 30px;
             padding: 40px; 
-            box-shadow: var(--shadow);
+            box-shadow: 0 10px 30px rgba(0,0,0,0.05);
             text-align: center;
             border: 1px solid rgba(255, 255, 255, 0.02);
         }
