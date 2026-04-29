@@ -129,6 +129,8 @@
                 <button class="audio-btn" onclick="event.stopPropagation(); reproducirAudio()">🔊</button>
                 <div id="flash-a" class="flashcard-a"></div>
             </div>
+                 <div id="quiz-options" class="hidden" style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-top: 20px;">
+    </div>
 
             <div id="writing-area" class="hidden">
                 <input type="text" id="write-input" placeholder="Escribe aquí la respuesta...">
@@ -244,17 +246,24 @@ function actualizarRacha() {
         el.classList.add('active');
     }
 
-    function startStudy(cat, isTest) {
-        mazo = [...items.flashcards[cat]].sort(() => Math.random() - 0.5);
-        idx = 0; modoTest = isTest;
-        const esVerbo = cat.toLowerCase().includes("verbo");
-        document.getElementById('view-dashboard').classList.add('hidden');
-        document.getElementById('view-study').classList.remove('hidden');
-        document.getElementById('study-topic').innerText = cat + (modoTest ? " • Modo Test" : " • Modo Repaso");
-        if (modoTest && esVerbo) document.getElementById('writing-area').classList.remove('hidden');
-        else document.getElementById('writing-area').classList.add('hidden');
-        updateCard();
+function startStudy(cat, isTest) {
+    mazo = [...items.flashcards[cat]].sort(() => Math.random() - 0.5);
+    idx = 0; modoTest = isTest;
+    const esVerbo = cat.toLowerCase().includes("verbo");
+    
+    document.getElementById('view-dashboard').classList.add('hidden');
+    document.getElementById('view-study').classList.remove('hidden');
+    document.getElementById('study-topic').innerText = cat + (modoTest ? " • Modo Test" : " • Modo Repaso");
+
+    // Mostrar escritura solo si es Test Y Verbo
+    if (modoTest && esVerbo) {
+        document.getElementById('writing-area').classList.remove('hidden');
+    } else {
+        document.getElementById('writing-area').classList.add('hidden');
     }
+    
+    updateCard();
+}
 
     function updateCard() {
         document.getElementById('flash-q').innerText = mazo[idx].q;
