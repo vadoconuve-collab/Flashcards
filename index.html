@@ -326,7 +326,21 @@
         document.getElementById('nivel-texto').innerText = nivel;
     }
 
-    function moveCard(d) { idx = (idx + d + mazo.length) % mazo.length; updateCard(); }
+    function moveCard(d) {
+    idx += d;
+    
+    // Si llegamos al final del mazo
+    if (idx >= mazo.length) {
+        alert("¡Mazo completado! Has hecho un gran trabajo. ✨");
+        exitStudy();
+        return;
+    }
+    
+    // Si intentamos ir atrás en la primera tarjeta, nos quedamos en 0
+    if (idx < 0) idx = 0;
+    
+    updateCard();
+}
     function exitStudy() { document.getElementById('view-study').classList.add('hidden'); document.getElementById('view-dashboard').classList.remove('hidden'); }
 </script>
 </body>
