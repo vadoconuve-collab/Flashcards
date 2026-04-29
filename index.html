@@ -102,6 +102,11 @@
                 <div class="tab-btn tab-item" onclick="switchTab('videos', this)">🎥 Ver</div>
             </div>
 
+            <div id="container-reto" class="hidden" style="margin-bottom: 25px; padding: 20px; background: rgba(245, 158, 11, 0.15); border: 1px dashed #F59E0B; border-radius: 20px; text-align: left;">
+    <h4 style="margin: 0 0 5px 0; color: #D97706; font-size: 0.9rem;">💡 Reto de la semana:</h4>
+    <p id="reto-texto" style="margin: 0; font-weight: 600; color: var(--primary); font-size: 1rem;"></p>
+</div>
+
             <div id="content-flashcards" class="tab-content"></div>
             <div id="content-lecturas" class="tab-content hidden"></div>
             <div id="content-videos" class="tab-content hidden"></div>
@@ -138,8 +143,27 @@
 
 <script>
     const SHEETS_URL = "https://docs.google.com/spreadsheets/d/e/2PACX-1vThhYdCFgB1S2jQEhtXtyTaDh4NfNPa8XSkvPkIAvtr2No8Z1z3TYcCjxSqDT3kdnOSa2JMmnU8FP_1/pub?output=csv";
-    let db = [], items = { flashcards: {}, readings: [], videos: [] }, mazo = [], idx = 0, modoTest = false;
+let db = [], items = { flashcards: {}, readings: [], videos: [], reto: null }, mazo = [], idx = 0, modoTest = false;
+// --- MÓDULO DE GAMIFICACIÓN ---
+function actualizarRacha() {
+    const hoy = new Date().toLocaleDateString();
+    let datosRacha = JSON.parse(localStorage.getItem('racha_angy') || '{"ultimaVisita":"","dias":0}');
+    
+    if (datosRacha.ultimaVisita === hoy) return datosRacha.dias; // Ya entró hoy
 
+    const ayer = new Date();
+    ayer.setDate(ayer.getDate() - 1);
+    
+    if (datosRacha.ultimaVisita === ayer.toLocaleDateString()) {
+        datosRacha.dias += 1; // Racha continúa
+    } else {
+        datosRacha.dias = 1; // Racha empieza de cero
+    }
+    
+    datosRacha.ultimaVisita = hoy;
+    localStorage.setItem('racha_angy', JSON.stringify(datosRacha));
+    return datosRacha.dias;
+}
     window.onload = () => {
         Papa.parse(SHEETS_URL, { download: true, complete: (res) => db = res.data });
         // Precarga de voces para evitar el fantasma
@@ -170,12 +194,17 @@
             document.getElementById('view-login').classList.add('hidden');
             document.getElementById('view-dashboard').classList.remove('hidden');
             document.getElementById('student-display').innerText = "¡Hola, " + rows[0][3] + "! ✨";
-            
-            items = { flashcards: {}, readings: [], videos: [] };
+            // Mostrar racha al entrar
+    const diasRacha = actualizarRacha();
+    if (diasRacha > 1) {
+        document.getElementById('student-display').innerHTML += `<br><span style="font-size:0.9rem; color:#F59E0B;">🔥 ¡Llevas ${diasRacha} días seguidos estudiando!</span>`;
+    }
+            items = { flashcards: {}, readings: [], videos: [], reto: null };
             rows.forEach(r => {
                 const type = (r[5] || "").toLowerCase();
                 if (type === "lectura") items.readings.push({t:r[0], l:r[1], c:r[2]});
                 else if (type === "video") items.videos.push({t:r[0], l:r[1], c:r[2]});
+                else if (type === "reto") items.reto = {t:r[0], desc:r[1]};
                 else {
                     if (!items.flashcards[r[2]]) items.flashcards[r[2]] = [];
                     items.flashcards[r[2]].push({q:r[0], a:r[1]});
@@ -186,6 +215,13 @@
     }
 
     function render() {
+        const conReto = document.getElementById('container-reto');
+    if (items.reto) {
+        conReto.classList.remove('hidden');
+        document.getElementById('reto-texto').innerHTML = `${items.reto.t}: <span style="font-weight:400;">${items.reto.desc}</span>`;
+    } else {
+        conReto.classList.add('hidden');
+    }
         const fCon = document.getElementById('content-flashcards'); fCon.innerHTML = "";
         Object.keys(items.flashcards).forEach(cat => {
             fCon.innerHTML += `<div class="resource-row"><span style="font-weight:600; font-size:0.95rem; color:var(--primary)">${cat}</span><div><button class="btn-small btn-repasar" onclick="startStudy('${cat}', false)">🎴 Ver</button><button class="btn-small btn-test" onclick="startStudy('${cat}', true)">✍️ Test</button></div></div>`;
