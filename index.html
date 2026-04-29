@@ -7,29 +7,62 @@
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600&family=Dancing+Script:wght@500&family=Inter:wght@300;400&display=swap" rel="stylesheet">
     <script src="https://cdnjs.cloudflare.com/ajax/libs/PapaParse/5.3.2/papaparse.min.js"></script>
     <style>
-        :root { --primary: #0F172A; --accent: #3B82F6; --bg: #F8FAFC; --glass: rgba(255, 255, 255, 0.10); }
+        :root {
+            --primary: #0F172A; 
+            --accent: #3B82F6;  
+            --bg: #F8FAFC;
+            --glass: rgba(255, 255, 255, 0.10); /* Ultra transparencia */
+        }
+
         body { margin: 0; padding: 0; font-family: 'Inter', sans-serif; background-color: var(--bg); display: flex; justify-content: center; min-height: 100vh; background-attachment: fixed; }
-        body::before { content: "Angy the teacher"; position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%) rotate(-15deg); font-family: 'Dancing Script', cursive; font-size: 12vw; color: rgba(15, 23, 42, 0.25) !important; z-index: -1; pointer-events: none; white-space: nowrap; }
+
+        /* MARCA DE AGUA POTENTE */
+        body::before {
+            content: "Angy the teacher"; position: fixed; top: 50%; left: 50%;
+            transform: translate(-50%, -50%) rotate(-15deg);
+            font-family: 'Dancing Script', cursive; font-size: 12vw; 
+            color: rgba(15, 23, 42, 0.25) !important; z-index: -1; pointer-events: none;
+            white-space: nowrap;
+        }
+
         .container { width: 100%; max-width: 550px; padding: 40px 20px; box-sizing: border-box; }
-        .card-panel { background: var(--glass) !important; backdrop-filter: blur(4px) !important; -webkit-backdrop-filter: blur(4px); border-radius: 30px; padding: 30px; box-shadow: 0 4px 20px rgba(0, 0, 0, 0.03); text-align: center; border: 1px solid rgba(255, 255, 255, 0.4); }
+
+        /* PANEL CRISTALINO */
+        .card-panel { 
+            background: var(--glass) !important; 
+            backdrop-filter: blur(4px) !important; 
+            -webkit-backdrop-filter: blur(4px);
+            border-radius: 30px; padding: 30px; 
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.03); 
+            text-align: center; border: 1px solid rgba(255, 255, 255, 0.4); 
+        }
+
         .nav-tabs { display: flex; gap: 8px; margin-bottom: 25px; }
         .tab-item { flex: 1; padding: 12px; background: rgba(255,255,255,0.3); border-radius: 15px; font-size: 0.85rem; font-weight: 600; cursor: pointer; color: #64748B; text-align: center; border: 1px solid rgba(255,255,255,0.2); }
         .tab-item.active { background: var(--primary); color: white; border: none; }
-        .resource-row { display: flex; align-items: center; justify-content: space-between; padding: 18px; background: rgba(255,255,255,0.2) !important; border-radius: 22px; margin-bottom: 12px; text-align: left; border: 1px solid rgba(255,255,255,0.3); }
+
+        .resource-row {
+            display: flex; align-items: center; justify-content: space-between;
+            padding: 18px; background: rgba(255,255,255,0.2) !important; border-radius: 22px;
+            margin-bottom: 12px; text-align: left; border: 1px solid rgba(255,255,255,0.3);
+        }
+
         .btn-primary { background: var(--primary); color: white; padding: 14px; border: none; border-radius: 15px; width: 100%; font-weight: 600; cursor: pointer; font-family: 'Poppins', sans-serif; }
         .btn-small { padding: 8px 12px; font-size: 0.75rem; border-radius: 10px; border: none; cursor: pointer; font-weight: 600; margin-left: 4px; display: inline-flex; align-items: center; gap: 4px; }
         .btn-repasar { background: var(--accent); color: white; }
         .btn-test { background: var(--primary); color: white; }
-        
-        /* AUDIO BTN STYLE */
-        .audio-btn { background: none; border: none; cursor: pointer; font-size: 1.2rem; margin-top: 10px; opacity: 0.6; transition: 0.3s; }
-        .audio-btn:hover { opacity: 1; transform: scale(1.1); }
 
-        .flashcard-box { min-height: 200px; display: flex; flex-direction: column; justify-content: center; align-items: center; background: rgba(255,255,255,0.15); border-radius: 25px; padding: 25px; margin: 20px 0; cursor: pointer; border: 1px solid rgba(255,255,255,0.2); }
+        .flashcard-box { min-height: 200px; display: flex; flex-direction: column; justify-content: center; align-items: center; background: rgba(255,255,255,0.15); border-radius: 25px; padding: 25px; margin: 20px 0; cursor: pointer; border: 1px solid rgba(255,255,255,0.2); position: relative; }
         .flashcard-q { font-size: 1.8rem; font-weight: 600; color: var(--primary); }
         .flashcard-a { display: none; margin-top: 15px; font-size: 1.4rem; color: var(--accent); border-top: 1px solid rgba(0,0,0,0.1); padding-top: 15px; width: 100%; }
+
+        /* BOTÓN AUDIO CUQUI */
+        .audio-btn { background: rgba(255,255,255,0.4); border: none; border-radius: 50%; width: 40px; height: 40px; cursor: pointer; font-size: 1.1rem; margin-top: 15px; display: flex; align-items: center; justify-content: center; transition: 0.3s; }
+        .audio-btn:hover { background: var(--accent); color: white; transform: scale(1.1); }
+
         .video-wrapper { position: relative; padding-bottom: 56.25%; height: 0; border-radius: 20px; overflow: hidden; margin-top: 10px; }
         .video-wrapper iframe { position: absolute; top: 0; left: 0; width: 100%; height: 100%; border: 0; }
+
         .hidden { display: none !important; }
         #writing-area { margin-top: 20px; padding: 20px; background: rgba(255,255,255,0.3); border-radius: 20px; border: 1px solid rgba(255,255,255,0.4); }
         #write-input { width: 100%; padding: 14px; border-radius: 12px; border: 1px solid rgba(0,0,0,0.1); box-sizing: border-box; text-align: center; font-size: 1.1rem; margin-bottom: 12px; outline: none; }
@@ -51,14 +84,17 @@
     <div id="view-dashboard" class="hidden">
         <div class="card-panel">
             <h2 id="student-display" style="text-align: left; font-size: 1.5rem; margin-bottom: 25px;"></h2>
+            
             <div class="nav-tabs">
                 <div class="tab-btn tab-item active" onclick="switchTab('flashcards', this)">🎴 Mazos</div>
                 <div class="tab-btn tab-item" onclick="switchTab('lecturas', this)">📖 Leer</div>
                 <div class="tab-btn tab-item" onclick="switchTab('videos', this)">🎥 Ver</div>
             </div>
+
             <div id="content-flashcards" class="tab-content"></div>
             <div id="content-lecturas" class="tab-content hidden"></div>
             <div id="content-videos" class="tab-content hidden"></div>
+
             <button class="btn-primary" style="margin-top: 35px; background: #64748B; font-size: 0.8rem;" onclick="location.reload()">Cerrar Sesión 👋</button>
         </div>
     </div>
@@ -93,40 +129,37 @@
     const SHEETS_URL = "https://docs.google.com/spreadsheets/d/e/2PACX-1vThhYdCFgB1S2jQEhtXtyTaDh4NfNPa8XSkvPkIAvtr2No8Z1z3TYcCjxSqDT3kdnOSa2JMmnU8FP_1/pub?output=csv";
     let db = [], items = { flashcards: {}, readings: [], videos: [] }, mazo = [], idx = 0, modoTest = false;
 
-    window.onload = () => Papa.parse(SHEETS_URL, { download: true, complete: (res) => db = res.data });
+    window.onload = () => {
+        Papa.parse(SHEETS_URL, { download: true, complete: (res) => db = res.data });
+        // Precarga de voces para evitar el fantasma
+        window.speechSynthesis.getVoices();
+    };
 
-function reproducirAudio() {
-    // Cancelamos cualquier audio que se esté reproduciendo para que no se pisen
-    window.speechSynthesis.cancel();
-
-    const msg = new SpeechSynthesisUtterance(mazo[idx].q);
-    
-    // Buscamos todas las voces disponibles en el dispositivo
-    const voces = window.speechSynthesis.getVoices();
-    
-    // Intentamos encontrar una voz de mujer en inglés (Google UK English Female o similar)
-    const vozPreferida = voces.find(v => 
-        (v.name.includes('Female') || v.name.includes('Google') || v.name.includes('Microsoft Zira')) 
-        && v.lang.includes('en')
-    );
-
-    if (vozPreferida) msg.voice = vozPreferida;
-
-    msg.lang = 'en-US';
-    msg.pitch = 1.1;  // Un poquito más agudo para que no parezca un señor mayor
-    msg.rate = 0.9;   // Un pelín más lento para que se entienda mejor la pronunciación
-    
-    window.speechSynthesis.speak(msg);
-}
+    function reproducirAudio() {
+        window.speechSynthesis.cancel();
+        const msg = new SpeechSynthesisUtterance(mazo[idx].q);
+        const voces = window.speechSynthesis.getVoices();
+        const vozPreferida = voces.find(v => 
+            (v.name.includes('Female') || v.name.includes('Google') || v.name.includes('Zira')) 
+            && v.lang.includes('en')
+        );
+        if (vozPreferida) msg.voice = vozPreferida;
+        msg.lang = 'en-US';
+        msg.pitch = 1.1; 
+        msg.rate = 0.9;
+        window.speechSynthesis.speak(msg);
+    }
 
     function handleLogin() {
         const u = document.getElementById('user-name').value.trim().toLowerCase();
         const p = document.getElementById('user-pass').value.trim();
         const rows = db.filter(r => r[3]?.toLowerCase() === u && r[4] === p);
+        
         if (rows.length) {
             document.getElementById('view-login').classList.add('hidden');
             document.getElementById('view-dashboard').classList.remove('hidden');
             document.getElementById('student-display').innerText = "¡Hola, " + rows[0][3] + "! ✨";
+            
             items = { flashcards: {}, readings: [], videos: [] };
             rows.forEach(r => {
                 const type = (r[5] || "").toLowerCase();
@@ -192,7 +225,7 @@ function reproducirAudio() {
         const correct = mazo[idx].a.toLowerCase();
         const feed = document.getElementById('write-feedback');
         if (val === correct) {
-            feed.innerText = "¡Excelente! ✨"; feed.style.color = "#10B981";
+            feed.innerText = "¡Correcto! ✨"; feed.style.color = "#10B981";
             setTimeout(() => moveCard(1), 1000);
         } else {
             feed.innerText = "Ups! Era: " + mazo[idx].a; feed.style.color = "#EF4444";
