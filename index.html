@@ -210,4 +210,8 @@
         }
     }
 
-    function moveCard(d) { idx = (idx + d + mazo.length) % m
+    function moveCard(d) { idx = (idx + d + mazo.length) % mazo.length; updateCard(); }
+    function exitStudy() { document.getElementById('view-study').classList.add('hidden'); document.getElementById('view-dashboard').classList.remove('hidden'); }
+</script>
+</body>
+</html>
