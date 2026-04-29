@@ -11,72 +11,76 @@
             --primary: #0F172A; 
             --accent: #3B82F6;  
             --bg: #F8FAFC;
-            --glass: rgba(255, 255, 255, 0.1); /* Ultra transparente */
+            --glass: rgba(255, 255, 255, 0.15); /* Ultra transparencia como pediste */
         }
 
         body { margin: 0; padding: 0; font-family: 'Inter', sans-serif; background-color: var(--bg); display: flex; justify-content: center; min-height: 100vh; background-attachment: fixed; }
 
+        /* MARCA DE AGUA POTENCIADA */
         body::before {
             content: "Angy the teacher"; position: fixed; top: 50%; left: 50%;
             transform: translate(-50%, -50%) rotate(-15deg);
             font-family: 'Dancing Script', cursive; font-size: 12vw; 
             color: rgba(15, 23, 42, 0.25) !important; z-index: -1; pointer-events: none;
+            white-space: nowrap;
         }
 
         .container { width: 100%; max-width: 550px; padding: 40px 20px; box-sizing: border-box; }
 
+        /* PANEL CRISTALINO */
         .card-panel { 
             background: var(--glass) !important; 
-            backdrop-filter: blur(4px) !important; 
-            -webkit-backdrop-filter: blur(4px);
+            backdrop-filter: blur(5px) !important; 
+            -webkit-backdrop-filter: blur(5px);
             border-radius: 30px; padding: 30px; 
-            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.03); 
-            text-align: center; border: 1px solid rgba(255, 255, 255, 0.5); 
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.05); 
+            text-align: center; border: 1px solid rgba(255, 255, 255, 0.4); 
         }
 
+        /* PESTAÑAS CON ICONOS */
         .nav-tabs { display: flex; gap: 8px; margin-bottom: 25px; }
-        .tab-item { flex: 1; padding: 12px; background: rgba(255,255,255,0.4); border-radius: 15px; font-size: 0.85rem; font-weight: 600; cursor: pointer; color: #64748B; text-align: center; transition: 0.3s; }
+        .tab-item { flex: 1; padding: 12px; background: rgba(255,255,255,0.4); border-radius: 15px; font-size: 0.8rem; font-weight: 600; cursor: pointer; color: #64748B; text-align: center; transition: 0.3s; }
         .tab-item.active { background: var(--primary); color: white; }
 
         .resource-row {
             display: flex; align-items: center; justify-content: space-between;
-            padding: 18px; background: rgba(255,255,255,0.3); border-radius: 22px;
-            margin-bottom: 12px; text-align: left; border: 1px solid rgba(255,255,255,0.4);
+            padding: 15px; background: rgba(255,255,255,0.4); border-radius: 20px;
+            margin-bottom: 12px; text-align: left; border: 1px solid rgba(255,255,255,0.2);
         }
 
-        .btn-primary { background: var(--primary); color: white; padding: 14px; border: none; border-radius: 15px; width: 100%; font-weight: 600; cursor: pointer; font-family: 'Poppins', sans-serif; }
-        .btn-small { padding: 8px 12px; font-size: 0.75rem; border-radius: 10px; border: none; cursor: pointer; font-weight: 600; margin-left: 4px; display: inline-flex; align-items: center; gap: 4px; }
+        .btn-primary { background: var(--primary); color: white; padding: 14px; border: none; border-radius: 12px; width: 100%; font-weight: 600; cursor: pointer; font-family: 'Poppins', sans-serif; }
+        .btn-small { padding: 8px 12px; font-size: 0.75rem; border-radius: 8px; border: none; cursor: pointer; font-weight: 600; margin-left: 5px; display: inline-flex; align-items: center; gap: 4px; }
         .btn-repasar { background: var(--accent); color: white; }
         .btn-test { background: var(--primary); color: white; }
 
-        .flashcard-box { min-height: 200px; display: flex; flex-direction: column; justify-content: center; align-items: center; background: rgba(255,255,255,0.2); border-radius: 25px; padding: 25px; margin: 20px 0; cursor: pointer; border: 1px solid rgba(255,255,255,0.3); }
-        .flashcard-q { font-size: 1.8rem; font-weight: 600; color: var(--primary); }
-        .flashcard-a { display: none; margin-top: 15px; font-size: 1.4rem; color: var(--accent); border-top: 1px solid rgba(0,0,0,0.1); padding-top: 15px; width: 100%; }
+        .flashcard-box { min-height: 180px; display: flex; flex-direction: column; justify-content: center; align-items: center; background: rgba(255,255,255,0.2); border-radius: 25px; padding: 25px; margin: 20px 0; cursor: pointer; border: 1px solid rgba(255,255,255,0.3); }
+        .flashcard-q { font-size: 1.6rem; font-weight: 600; color: var(--primary); }
+        .flashcard-a { display: none; margin-top: 15px; font-size: 1.3rem; color: var(--accent); border-top: 1px solid rgba(0,0,0,0.1); padding-top: 15px; width: 100%; }
 
-        .video-wrapper { position: relative; padding-bottom: 56.25%; height: 0; border-radius: 20px; overflow: hidden; margin-top: 10px; }
+        .video-wrapper { position: relative; padding-bottom: 56.25%; height: 0; border-radius: 16px; overflow: hidden; margin-top: 10px; }
         .video-wrapper iframe { position: absolute; top: 0; left: 0; width: 100%; height: 100%; border: 0; }
 
         .hidden { display: none !important; }
-        #writing-area { margin-top: 20px; padding: 20px; background: rgba(255,255,255,0.4); border-radius: 20px; border: 1px solid rgba(255,255,255,0.5); }
-        #write-input { width: 100%; padding: 14px; border-radius: 12px; border: 1px solid rgba(0,0,0,0.1); box-sizing: border-box; text-align: center; font-size: 1.1rem; margin-bottom: 12px; outline: none; }
+        #writing-area { margin-top: 20px; padding: 15px; background: rgba(255,255,255,0.3); border-radius: 20px; border: 1px solid rgba(255,255,255,0.2); }
+        #write-input { width: 100%; padding: 12px; border-radius: 10px; border: 1px solid rgba(0,0,0,0.1); box-sizing: border-box; text-align: center; font-size: 1rem; margin-bottom: 10px; outline: none; }
     </style>
 </head>
 <body>
 
 <div class="container">
     <div id="view-login" class="card-panel">
-        <h2 style="font-family: 'Poppins'; font-size: 2.2rem; margin-bottom: 5px;">Angy</h2>
-        <p style="font-family: 'Dancing Script'; font-size: 1.5rem; color: var(--accent); margin-top: 0;">the teacher</p>
+        <h2 style="font-family: 'Poppins'; margin-bottom: 0;">Angy</h2>
+        <p style="font-family: 'Dancing Script'; font-size: 1.4rem; color: var(--accent); margin-top: -5px;">the teacher</p>
         <div style="margin-top: 30px;">
-            <input type="text" id="user-name" style="width:100%; padding:16px; margin-bottom:12px; border-radius:15px; border:1px solid #eee; background: rgba(255,255,255,0.8);" placeholder="Tu nombre">
-            <input type="password" id="user-pass" style="width:100%; padding:16px; margin-bottom:20px; border-radius:15px; border:1px solid #eee; background: rgba(255,255,255,0.8);" placeholder="Contraseña">
+            <input type="text" id="user-name" style="width:100%; padding:15px; margin-bottom:10px; border-radius:12px; border:1px solid #ddd; background: rgba(255,255,255,0.7);" placeholder="Tu nombre">
+            <input type="password" id="user-pass" style="width:100%; padding:15px; margin-bottom:20px; border-radius:12px; border:1px solid #ddd; background: rgba(255,255,255,0.7);" placeholder="Contraseña">
             <button class="btn-primary" onclick="handleLogin()">Entrar al Aula 🔑</button>
         </div>
     </div>
 
     <div id="view-dashboard" class="hidden">
         <div class="card-panel">
-            <h2 id="student-display" style="text-align: left; font-size: 1.5rem; margin-bottom: 25px;"></h2>
+            <h2 id="student-display" style="text-align: left; font-size: 1.4rem; margin-bottom: 20px;"></h2>
             
             <div class="nav-tabs">
                 <div class="tab-btn tab-item active" onclick="switchTab('flashcards', this)">🎴 Mazos</div>
@@ -95,7 +99,7 @@
     <div id="view-study" class="hidden">
         <div class="card-panel">
             <h3 id="study-topic" style="color: #64748B; font-size: 1rem; margin-bottom: 5px;"></h3>
-            <div id="study-progress" style="font-size: 0.75rem; color: #94A3B8; margin-bottom: 15px;"></div>
+            <div id="study-progress" style="font-size: 0.7rem; color: #94A3B8; margin-bottom: 10px;"></div>
             
             <div class="flashcard-box" onclick="showAnswer()">
                 <div id="flash-q" class="flashcard-q"></div>
@@ -105,14 +109,14 @@
             <div id="writing-area" class="hidden">
                 <input type="text" id="write-input" placeholder="Escribe aquí la respuesta...">
                 <button class="btn-primary" onclick="checkWriting()">Comprobar ✨</button>
-                <div id="write-feedback" style="margin-top:15px; font-weight:600; font-size: 1.1rem;"></div>
+                <div id="write-feedback" style="margin-top:10px; font-weight:600;"></div>
             </div>
 
             <div style="display: flex; gap: 10px; margin-top: 25px;">
                 <button class="btn-primary" style="background: #94A3B8;" onclick="moveCard(-1)">⬅️</button>
                 <button class="btn-primary" onclick="moveCard(1)">Siguiente ➡️</button>
             </div>
-            <button class="btn-primary" style="background: transparent; color: #64748B; border: 1px solid #ddd; margin-top: 20px; font-size: 0.8rem;" onclick="exitStudy()">Volver al menú</button>
+            <button class="btn-primary" style="background: transparent; color: #64748B; border: 1px solid #ddd; margin-top: 15px; font-size: 0.8rem;" onclick="exitStudy()">Volver al menú</button>
         </div>
     </div>
 </div>
@@ -133,29 +137,41 @@
             document.getElementById('view-dashboard').classList.remove('hidden');
             document.getElementById('student-display').innerText = "¡Hola, " + rows[0][3] + "! ✨";
             
+            // RESET ITEMS PARA EVITAR DUPLICADOS
+            items = { flashcards: {}, readings: [], videos: [] };
+
             rows.forEach(r => {
-                const type = (r[5] || "").toLowerCase();
+                const type = (r[5] || "").trim().toLowerCase();
                 if (type === "lectura") items.readings.push({t:r[0], l:r[1], c:r[2]});
                 else if (type === "video") items.videos.push({t:r[0], l:r[1], c:r[2]});
                 else {
-                    if (!items.flashcards[r[2]]) items.flashcards[r[2]] = [];
-                    items.flashcards[r[2]].push({q:r[0], a:r[1]});
+                    const cat = r[2] || "General";
+                    if (!items.flashcards[cat]) items.flashcards[cat] = [];
+                    items.flashcards[cat].push({q:r[0], a:r[1]});
                 }
             });
             render();
-        } else alert("Revisa tu nombre o contraseña 🧐");
+        } else alert("Revisa tus datos 🧐");
     }
 
     function render() {
-        const fCon = document.getElementById('content-flashcards'); fCon.innerHTML = "";
+        // MAZOS
+        const fCon = document.getElementById('content-flashcards');
+        fCon.innerHTML = "";
         Object.keys(items.flashcards).forEach(cat => {
-            fCon.innerHTML += `<div class="resource-row"><span style="font-weight:600; font-size:0.95rem; color:var(--primary)">${cat}</span><div><button class="btn-small btn-repasar" onclick="startStudy('${cat}', false)">🎴 Ver</button><button class="btn-small btn-test" onclick="startStudy('${cat}', true)">✍️ Test</button></div></div>`;
+            fCon.innerHTML += `<div class="resource-row"><span style="font-weight:600; font-size:0.9rem;">${cat}</span><div><button class="btn-small btn-repasar" onclick="startStudy('${cat}', false)">🎴 Ver</button><button class="btn-small btn-test" onclick="startStudy('${cat}', true)">✍️ Test</button></div></div>`;
         });
-        document.getElementById('content-lecturas').innerHTML = items.readings.map(l => `<div class="resource-row"><div><h4 style="margin:0; font-size:0.9rem;">${l.t}</h4><span style="font-size:0.7rem; color:#64748B;">${l.c}</span></div><button class="btn-small btn-repasar" onclick="window.open('${l.l}')">📖 Leer</button></div>`).join('') || "No hay lecturas disponibles.";
+
+        // LECTURAS
+        document.getElementById('content-lecturas').innerHTML = items.readings.map(l => 
+            `<div class="resource-row"><div><h4 style="margin:0; font-size:0.9rem;">${l.t}</h4><span style="font-size:0.75rem; color:#64748B;">${l.c}</span></div><button class="btn-small btn-repasar" onclick="window.open('${l.l}')">📖 Leer</button></div>`
+        ).join('') || "<p style='font-size:0.8rem; opacity:0.6'>No hay lecturas asignadas.</p>";
+
+        // VIDEOS
         document.getElementById('content-videos').innerHTML = items.videos.map(v => {
             const id = v.l.split('v=')[1]?.split('&')[0] || v.l.split('/').pop();
-            return `<div style="margin-bottom:25px;text-align:left"><h4 style="font-size:0.9rem; margin-bottom:8px;">🎥 ${v.t}</h4><div class="video-wrapper"><iframe src="https://www.youtube.com/embed/${id}"></iframe></div></div>`;
-        }).join('') || "No hay vídeos disponibles.";
+            return `<div style="margin-bottom:20px;text-align:left"><h4 style="font-size:0.9rem; margin-bottom:8px;">🎥 ${v.t}</h4><div class="video-wrapper"><iframe src="https://www.youtube.com/embed/${id}"></iframe></div></div>`;
+        }).join('') || "<p style='font-size:0.8rem; opacity:0.6'>No hay vídeos asignados.</p>";
     }
 
     function switchTab(id, el) {
@@ -169,6 +185,7 @@
         mazo = [...items.flashcards[cat]].sort(() => Math.random() - 0.5);
         idx = 0; modoTest = isTest;
         const esVerbo = cat.toLowerCase().includes("verbo");
+
         document.getElementById('view-dashboard').classList.add('hidden');
         document.getElementById('view-study').classList.remove('hidden');
         document.getElementById('study-topic').innerText = cat + (modoTest ? " • Modo Test" : " • Modo Repaso");
@@ -199,15 +216,4 @@
         const correct = mazo[idx].a.toLowerCase();
         const feed = document.getElementById('write-feedback');
         if (val === correct) {
-            feed.innerText = "¡Excelente! ✨"; feed.style.color = "#10B981";
-            setTimeout(() => moveCard(1), 1000);
-        } else {
-            feed.innerText = "Ups! Era: " + mazo[idx].a; feed.style.color = "#EF4444";
-        }
-    }
-
-    function moveCard(d) { idx = (idx + d + mazo.length) % mazo.length; updateCard(); }
-    function exitStudy() { document.getElementById('view-study').classList.add('hidden'); document.getElementById('view-dashboard').classList.remove('hidden'); }
-</script>
-</body>
-</html>
+            feed.innerText
