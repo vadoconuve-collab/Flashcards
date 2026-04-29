@@ -274,17 +274,58 @@ function startStudy(cat, isTest) {
         document.getElementById('quiz-options').classList.add('hidden');
     }
     
-    updateCard();
-}
+function updateCard() {
+    const qEl = document.getElementById('flash-q');
+    const aEl = document.getElementById('flash-a');
+    const optsEl = document.getElementById('quiz-options'); // <--- El hueco de los botones
+    
+    qEl.innerText = mazo[idx].q;
+    aEl.innerText = mazo[idx].a;
+    aEl.style.display = "none";
+    
+    // 1. Vaciamos los botones anteriores para que no se acumulen
+    optsEl.innerHTML = ""; 
+    
+    document.getElementById('write-feedback').innerText = "";
+    document.getElementById('write-input').value = "";
+    document.getElementById('study-progress').innerText = `TARJETA ${idx + 1} de ${mazo.length}`;
 
-    function updateCard() {
-        document.getElementById('flash-q').innerText = mazo[idx].q;
-        document.getElementById('flash-a').innerText = mazo[idx].a;
-        document.getElementById('flash-a').style.display = "none";
-        document.getElementById('write-feedback').innerText = "";
-        document.getElementById('write-input').value = "";
-        document.getElementById('study-progress').innerText = `TARJETA ${idx + 1} de ${mazo.length}`;
+    // 2. ¿Es modo Test y NO es verbo? ¡Fabricamos botones!
+    const esVerbo = document.getElementById('study-topic').innerText.toLowerCase().includes("verbo");
+    
+    if (modoTest && !esVerbo) {
+        // Creamos la lista de opciones (la correcta + 3 aleatorias)
+        let opciones = [mazo[idx].a];
+        let otras = mazo.filter(m => m.a !== mazo[idx].a).map(m => m.a);
+        otras.sort(() => 0.5 - Math.random());
+        opciones = opciones.concat(otras.slice(0, 3)).sort(() => 0.5 - Math.random());
+
+        // Dibujamos cada botón en el HTML
+        opciones.forEach(opt => {
+            const btn = document.createElement('button');
+            btn.className = "btn-primary"; // <--- Usa tu estilo de botón
+            btn.style.fontSize = "0.85rem";
+            btn.style.padding = "10px";
+            btn.style.background = "rgba(255,255,255,0.5)"; // Estilo cristalino
+            btn.style.color = "var(--primary)";
+            btn.style.border = "1px solid rgba(0,0,0,0.1)";
+            btn.innerText = opt;
+            
+            // Al hacer clic, comprobamos si es la buena
+            btn.onclick = () => {
+                if (opt === mazo[idx].a) {
+                    puntos += 10;
+                    document.getElementById('puntos-valor').innerText = puntos;
+                    actualizarNivel();
+                    moveCard(1); // ¡Correcto! Siguiente tarjeta
+                } else {
+                    alert("¡Ups! Inténtalo de nuevo 🧐");
+                }
+            };
+            optsEl.appendChild(btn);
+        });
     }
+}
 
     function showAnswer() { 
         if (!modoTest || (modoTest && !document.getElementById('study-topic').innerText.toLowerCase().includes("verbo"))) {
