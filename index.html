@@ -46,8 +46,7 @@
             padding: 18px; background: rgba(255,255,255,0.02) !important; border-radius: 22px;
             margin-bottom: 12px; text-align: left; border: 1px solid rgba(255,255,255,0.03);
         }
-        <button class="btn-primary" onclick="showSection('social-section')">📱 Real English</button>
-        <button class="btn-primary" onclick="showSection('grammar-section')">📊 Esquemas</button>
+        
         .btn-primary { background: var(--primary); color: white; padding: 14px; border: none; border-radius: 15px; width: 100%; font-weight: 600; cursor: pointer; font-family: 'Poppins', sans-serif; }
         .btn-small { padding: 8px 12px; font-size: 0.75rem; border-radius: 10px; border: none; cursor: pointer; font-weight: 600; margin-left: 4px; display: inline-flex; align-items: center; gap: 4px; }
         .btn-repasar { background: var(--accent); color: white; }
@@ -93,6 +92,8 @@
                 <div class="tab-btn tab-item active" onclick="switchTab('flashcards', this)">🎴 Mazos</div>
                 <div class="tab-btn tab-item" onclick="switchTab('lecturas', this)">📖 Leer</div>
                 <div class="tab-btn tab-item" onclick="switchTab('videos', this)">🎥 Ver</div>
+                <div class="tab-btn tab-item" onclick="showSection('social-section')">📱 Social</div>
+                <div class="tab-btn tab-item" onclick="showSection('grammar-section')">📊 Esquemas</div>
             </div>
 
             <div id="container-reto" class="hidden" style="margin-bottom: 25px; padding: 20px; background: rgba(245, 158, 11, 0.15); border: 1px dashed #F59E0B; border-radius: 20px; text-align: left;">
