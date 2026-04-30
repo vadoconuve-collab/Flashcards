@@ -363,7 +363,7 @@ async function cargarExtras(userLogueado) {
     const urlRedes = `https://docs.google.com/spreadsheets/d/${sheetID}/gviz/tq?tqx=out:csv&sheet=Redes`;
     const urlEsquemas = `https://docs.google.com/spreadsheets/d/${sheetID}/gviz/tq?tqx=out:csv&sheet=Esquemas`;
 
-    // Cargar Redes Filtradas
+    // Cargar Redes
     Papa.parse(urlRedes, {
         download: true,
         header: true,
@@ -371,19 +371,16 @@ async function cargarExtras(userLogueado) {
             const container = document.getElementById('social-buttons-container');
             if (!container) return;
             container.innerHTML = ""; 
-            
-            // FILTRO: Solo las filas que coincidan con el alumno
             const datosFiltrados = results.data.filter(r => r.Usuario?.toLowerCase() === userLogueado);
-            
             datosFiltrados.forEach(red => {
                 if(red.Nombre && red.URL) {
                     const btn = document.createElement('a');
                     btn.href = red.URL;
                     btn.target = "_blank";
                     btn.className = "btn-primary";
-                    btn.style.textDecoration = "none";
-                    btn.style.display = "block";
                     btn.style.marginBottom = "10px";
+                    btn.style.display = "block";
+                    btn.style.textDecoration = "none";
                     btn.innerText = `🔗 ${red.Nombre}`;
                     container.appendChild(btn);
                 }
@@ -391,7 +388,7 @@ async function cargarExtras(userLogueado) {
         }
     });
 
-    // Cargar Esquemas Filtrados
+    // Cargar Esquemas
     Papa.parse(urlEsquemas, {
         download: true,
         header: true,
@@ -399,10 +396,7 @@ async function cargarExtras(userLogueado) {
             const gallery = document.getElementById('grammar-gallery');
             if (!gallery) return;
             gallery.innerHTML = ""; 
-            
-            // FILTRO: Solo los esquemas de este alumno
             const esquemasFiltrados = results.data.filter(e => e.Usuario?.toLowerCase() === userLogueado);
-            
             esquemasFiltrados.forEach(esquema => {
                 if(esquema.URL_Imagen) {
                     const imgBox = document.createElement('div');
