@@ -46,7 +46,8 @@
             padding: 18px; background: rgba(255,255,255,0.02) !important; border-radius: 22px;
             margin-bottom: 12px; text-align: left; border: 1px solid rgba(255,255,255,0.03);
         }
-
+        <button class="btn-primary" onclick="showSection('social-section')">📱 Real English</button>
+        <button class="btn-primary" onclick="showSection('grammar-section')">📊 Esquemas</button>
         .btn-primary { background: var(--primary); color: white; padding: 14px; border: none; border-radius: 15px; width: 100%; font-weight: 600; cursor: pointer; font-family: 'Poppins', sans-serif; }
         .btn-small { padding: 8px 12px; font-size: 0.75rem; border-radius: 10px; border: none; cursor: pointer; font-weight: 600; margin-left: 4px; display: inline-flex; align-items: center; gap: 4px; }
         .btn-repasar { background: var(--accent); color: white; }
@@ -134,7 +135,29 @@
         </div>
     </div>
 </div>
+<!-- SECCIÓN REDES SOCIALES -->
+<div id="social-section" class="hidden">
+    <div class="card-panel">
+        <h3>📱 English in the Real World</h3>
+        <p>Sigue a estos creadores para mejorar tu listening:</p>
+        <div id="social-buttons-container" style="display: flex; flex-direction: column; gap: 10px; margin: 20px 0;">
+            <!-- Aquí aparecerán los botones -->
+        </div>
+        <button class="btn-secondary" onclick="showSection('dashboard')">Volver</button>
+    </div>
+</div>
 
+<!-- SECCIÓN ESQUEMAS -->
+<div id="grammar-section" class="hidden">
+    <div class="card-panel">
+        <h3>📊 Mis Esquemas de Clase</h3>
+        <div id="grammar-gallery" style="display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 20px; margin: 20px 0;">
+            <!-- Aquí aparecerán las fotos -->
+        </div>
+        <button class="btn-secondary" onclick="showSection('dashboard')">Volver</button>
+    </div>
+</div>
+    
 <script>
     const SHEETS_URL = "https://docs.google.com/spreadsheets/d/e/2PACX-1vThhYdCFgB1S2jQEhtXtyTaDh4NfNPa8XSkvPkIAvtr2No8Z1z3TYcCjxSqDT3kdnOSa2JMmnU8FP_1/pub?output=csv";
     let db = [], items = { flashcards: {}, readings: [], videos: [], reto: null }, mazo = [], idx = 0, modoTest = false, puntos = 0;
@@ -334,6 +357,59 @@ function moveCard(d) {
     updateCard();
 }
     function exitStudy() { document.getElementById('view-study').classList.add('hidden'); document.getElementById('view-dashboard').classList.remove('hidden'); }
+// --- FUNCIÓN PARA CARGAR REDES Y ESQUEMAS ---
+async function cargarExtras() {
+    // 1. URL de tu Google Sheet (es la misma que ya usas)
+    const sheetURL = "https://docs.google.com/spreadsheets/d/e/2PACX-1vThhYdCFgB1S2jQEhtXtyTaDh4NfNPa8XSkvPkIAvtr2No8Z1z3TYcCjxSqDT3kdnOSa2JMmnU8FP_1/pub?output=csv";
+    
+    // Cargamos la pestaña de "Redes" (ajusta el nombre si le pusiste otro)
+    Papa.parse(`${sheetURL}&sheet=Redes`, {
+        download: true,
+        header: true,
+        complete: function(results) {
+            const container = document.getElementById('social-buttons-container');
+            results.data.forEach(red => {
+                if(red.Nombre && red.URL) {
+                    const btn = document.createElement('a');
+                    btn.href = red.URL;
+                    btn.target = "_blank"; // Para que se abra en otra pestaña
+                    btn.className = "btn-primary";
+                    btn.style.textDecoration = "none";
+                    btn.style.display = "block";
+                    btn.innerText = `🔗 ${red.Nombre}`;
+                    container.appendChild(btn);
+                }
+            });
+        }
+    });
+
+    // Cargamos la pestaña de "Esquemas"
+    Papa.parse(`${sheetURL}&sheet=Esquemas`, {
+        download: true,
+        header: true,
+        complete: function(results) {
+            const gallery = document.getElementById('grammar-gallery');
+            results.data.forEach(esquema => {
+                if(esquema.URL_Imagen) {
+                    const imgBox = document.createElement('div');
+                    imgBox.style.background = "rgba(255,255,255,0.05)";
+                    imgBox.style.padding = "10px";
+                    imgBox.style.borderRadius = "15px";
+                    
+                    imgBox.innerHTML = `
+                        <img src="${esquema.URL_Imagen}" style="width:100%; border-radius:10px; cursor:pointer;" 
+                             onclick="window.open(this.src, '_blank')">
+                        <p style="margin-top:10px; font-size:0.9em;">${esquema.Titulo || 'Esquema'}</p>
+                    `;
+                    gallery.appendChild(imgBox);
+                }
+            });
+        }
+    });
+}
+
+// Llamamos a esta función al cargar la página para que los datos estén listos
+window.addEventListener('load', cargarExtras);
 </script>
 </body>
 </html>
