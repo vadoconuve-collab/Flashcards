@@ -92,8 +92,8 @@
                 <div class="tab-btn tab-item active" onclick="switchTab('flashcards', this)">🎴 Mazos</div>
                 <div class="tab-btn tab-item" onclick="switchTab('lecturas', this)">📖 Leer</div>
                 <div class="tab-btn tab-item" onclick="switchTab('videos', this)">🎥 Ver</div>
-                <div class="tab-btn tab-item" onclick="switchTab('social-section', this)">📱 Social</div>
-                <div class="tab-btn tab-item" onclick="switchTab('grammar-section', this)">📊 Esquemas</div>
+                <div class="tab-btn tab-item" onclick="switchTab('redes', this)">📱 Redes</div>
+                <div class="tab-btn tab-item" onclick="switchTab('esquemas', this)">📊 Esquemas</div>
             </div>
 
             <div id="container-reto" class="hidden" style="margin-bottom: 25px; padding: 20px; background: rgba(245, 158, 11, 0.15); border: 1px dashed #F59E0B; border-radius: 20px; text-align: left;">
@@ -137,7 +137,7 @@
     </div>
 </div>
 <!-- SECCIÓN REDES SOCIALES -->
-<div id="content-social" class="tab-content hidden">
+<div id="content-redes" class="tab-content hidden">
     <div class="card-panel">
         <h3>📱 English in the Real World</h3>
         <p>Sigue a estos creadores para mejorar tu listening:</p>
@@ -148,7 +148,7 @@
 </div>
 
 <!-- SECCIÓN ESQUEMAS -->
-<div id="content-grammar" class="tab-content hidden">
+<div id="content-esquemas" class="tab-content hidden">
     <div class="card-panel">
         <h3>📊 Mis Esquemas de Clase</h3>
         <div id="grammar-gallery" style="display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 20px; margin: 20px 0;">
@@ -156,7 +156,7 @@
         </div>
     </div>
 </div>
-}    
+    
 <script>
     const SHEETS_URL = "https://docs.google.com/spreadsheets/d/e/2PACX-1vThhYdCFgB1S2jQEhtXtyTaDh4NfNPa8XSkvPkIAvtr2No8Z1z3TYcCjxSqDT3kdnOSa2JMmnU8FP_1/pub?output=csv";
     let db = [], items = { flashcards: {}, readings: [], videos: [], reto: null }, mazo = [], idx = 0, modoTest = false, puntos = 0;
