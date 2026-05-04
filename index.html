@@ -65,6 +65,16 @@
         .hidden { display: none !important; }
         #writing-area { margin-top: 20px; padding: 20px; background: rgba(255,255,255,0.3); border-radius: 20px; border: 1px solid rgba(255,255,255,0.4); }
         #write-input { width: 100%; padding: 14px; border-radius: 12px; border: 1px solid rgba(0,0,0,0.1); box-sizing: border-box; text-align: center; font-size: 1.1rem; margin-bottom: 12px; outline: none; }
+
+        /* Lightbox */
+        #lightbox { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.88); z-index: 9999; justify-content: center; align-items: center; padding: 20px; box-sizing: border-box; }
+        #lightbox.active { display: flex; }
+        #lightbox img { max-width: 100%; max-height: 90vh; border-radius: 16px; box-shadow: 0 8px 40px rgba(0,0,0,0.5); object-fit: contain; }
+        #lightbox-close { position: absolute; top: 20px; right: 24px; font-size: 2.5rem; color: white; cursor: pointer; background: none; border: none; line-height: 1; }
+        .esquema-card { background: white; padding: 12px; border-radius: 20px; box-shadow: 0 2px 10px rgba(0,0,0,0.07); cursor: pointer; transition: transform 0.2s; }
+        .esquema-card:hover { transform: scale(1.02); }
+        .esquema-card img { width: 100%; border-radius: 10px; display: block; }
+        .esquema-card p { margin: 10px 0 0 0; font-weight: 600; color: var(--primary); font-size: 0.9rem; text-align: center; }
     </style>
 </head>
 <body>
@@ -411,12 +421,11 @@ async function cargarExtras(userLogueado) {
                 const imgURL = esquema.URL_Image || esquema.URL_Imagen || "";
                 if (imgURL) {
                     const imgBox = document.createElement('div');
-                    imgBox.style.cssText = "background:white; padding:15px; border-radius:20px; box-shadow:0 2px 10px rgba(0,0,0,0.05);";
+                    imgBox.className = 'esquema-card';
+                    imgBox.onclick = () => openLightbox(imgURL);
                     imgBox.innerHTML = `
-                        <img src="${imgURL}" style="width:100%; border-radius:12px; cursor:pointer;"
-                             onclick="window.open('${imgURL}', '_blank')"
-                             onerror="this.style.display='none'">
-                        <p style="margin-top:12px; font-weight:600; color:var(--primary); font-size:0.9rem;">${esquema.Titulo || 'Esquema'}</p>
+                        <img src="${imgURL}" alt="${esquema.Titulo || 'Esquema'}" onerror="this.style.display='none'">
+                        <p>${esquema.Titulo || 'Esquema'}</p>
                     `;
                     gallery.appendChild(imgBox);
                 }
@@ -429,6 +438,24 @@ async function cargarExtras(userLogueado) {
     });
 }
 
+    function openLightbox(url) {
+        document.getElementById('lightbox-img').src = url;
+        document.getElementById('lightbox').classList.add('active');
+        document.body.style.overflow = 'hidden';
+    }
+    function closeLightbox() {
+        document.getElementById('lightbox').classList.remove('active');
+        document.getElementById('lightbox-img').src = '';
+        document.body.style.overflow = '';
+    }
+    document.addEventListener('keydown', e => { if (e.key === 'Escape') closeLightbox(); });
+
 </script>
+
+<!-- LIGHTBOX -->
+<div id="lightbox" onclick="closeLightbox()">
+    <button id="lightbox-close" onclick="closeLightbox()">✕</button>
+    <img id="lightbox-img" src="" alt="Esquema">
+</div>
 </body>
 </html>
