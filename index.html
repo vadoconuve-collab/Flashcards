@@ -165,8 +165,37 @@
 </div>
 
 <script>
-    const SHEETS_URL = "https://docs.google.com/spreadsheets/d/e/2PACX-1vThhYdCFgB1S2jQEhtXtyTaDh4NfNPa8XSkvPkIAvtr2No8Z1z3TYcCjxSqDT3kdnOSa2JMmnU8FP_1/pub?output=csv";
-    let db = [], items = { flashcards: {}, readings: [], videos: [], reto: null }, mazo = [], idx = 0, modoTest = false, puntos = 0;
+    const BASE = "https://docs.google.com/spreadsheets/d/e/2PACX-1vThhYdCFgB1S2jQEhtXtyTaDh4NfNPa8XSkvPkIAvtr2No8Z1z3TYcCjxSqDT3kdnOSa2JMmnU8FP_1/pub?output=csv&single=true&gid=";
+    const GIDS = {
+        usuarios:  "1020617634",
+        reto:      "412635172",
+        flashcard: "0",
+        lectura:   "873529677",
+        video:     "1497281355",
+        redes:     "594674464",
+        esquemas:  "1983367458"
+    };
+
+    let items = { flashcards: {}, readings: [], videos: [], reto: null };
+    let mazo = [], idx = 0, modoTest = false, puntos = 0;
+    let usuarioActual = "";
+
+    // Carga CSV de una hoja por su GID y devuelve una promesa con los datos
+    function cargarHoja(gid, conCabecera = false) {
+        return new Promise((resolve, reject) => {
+            Papa.parse(BASE + gid, {
+                download: true,
+                header: conCabecera,
+                complete: r => resolve(r.data),
+                error: reject
+            });
+        });
+    }
+
+    function usuarioCoincide(campo, user) {
+        if (!campo) return false;
+        return campo.split(',').map(u => u.trim().toLowerCase()).includes(user);
+    }
 
     function actualizarRacha() {
         const hoy = new Date().toLocaleDateString();
@@ -174,64 +203,74 @@
         if (datosRacha.ultimaVisita === hoy) return datosRacha.dias;
         const ayer = new Date();
         ayer.setDate(ayer.getDate() - 1);
-        if (datosRacha.ultimaVisita === ayer.toLocaleDateString()) {
-            datosRacha.dias += 1;
-        } else {
-            datosRacha.dias = 1;
-        }
+        datosRacha.dias = (datosRacha.ultimaVisita === ayer.toLocaleDateString()) ? datosRacha.dias + 1 : 1;
         datosRacha.ultimaVisita = hoy;
         localStorage.setItem('racha_angy', JSON.stringify(datosRacha));
         return datosRacha.dias;
     }
 
-    window.onload = () => {
-        Papa.parse(SHEETS_URL, { download: true, complete: (res) => db = res.data });
-        window.speechSynthesis.getVoices();
-    };
+    window.onload = () => { window.speechSynthesis.getVoices(); };
 
-    function reproducirAudio() {
-        window.speechSynthesis.cancel();
-        const msg = new SpeechSynthesisUtterance(mazo[idx].q);
-        const voces = window.speechSynthesis.getVoices();
-        const vozPreferida = voces.find(v => (v.name.includes('Female') || v.name.includes('Google') || v.name.includes('Zira')) && v.lang.includes('en'));
-        if (vozPreferida) msg.voice = vozPreferida;
-        msg.lang = 'en-US';
-        msg.pitch = 1.1; 
-        msg.rate = 0.9;
-        window.speechSynthesis.speak(msg);
-    }
-
-    function handleLogin() {
+    async function handleLogin() {
         const u = document.getElementById('user-name').value.trim().toLowerCase();
         const p = document.getElementById('user-pass').value.trim();
-        const rows = db.filter(r => usuarioCoincide(r[3], u) && r[4] === p);
-        if (rows.length) {
-            document.getElementById('view-login').classList.add('hidden');
-            document.getElementById('view-dashboard').classList.remove('hidden');
-            document.getElementById('student-display').innerText = "¡Hola, " + rows[0][3] + "! ✨";
-            const diasRacha = actualizarRacha();
-            if (diasRacha > 1) {
-                document.getElementById('student-display').innerHTML += `<br><span style="font-size:0.9rem; color:#F59E0B;">🔥 ¡Llevas ${diasRacha} días seguidos estudiando!</span>`;
-            }
-            items = { flashcards: {}, readings: [], videos: [], reto: null };
-            rows.forEach(r => {
-                const type = (r[5] || "").toLowerCase();
-                if (type === "lectura") items.readings.push({t:r[0], l:r[1], c:r[2]});
-                else if (type === "video") items.videos.push({t:r[0], l:r[1], c:r[2]});
-                else if (type === "reto") items.reto = {t:r[0], desc:r[1]};
-                else {
-                    if (!items.flashcards[r[2]]) items.flashcards[r[2]] = [];
-                    items.flashcards[r[2]].push({q:r[0], a:r[1]});
-                }
-            });
-            render();
-            cargarExtras(u);
-         } else {
-            alert("Revisa tu nombre o contraseña 🧐");
+
+        // 1. Verificar credenciales en hoja Usuarios (col A=nombre, col B=contraseña)
+        let usuarios;
+        try { usuarios = await cargarHoja(GIDS.usuarios); }
+        catch(e) { alert("Error al conectar. Inténtalo de nuevo."); return; }
+
+        const userRow = usuarios.find(r => r[0]?.trim().toLowerCase() === u && String(r[1]).trim() === p);
+        if (!userRow) { alert("Revisa tu nombre o contraseña 🧐"); return; }
+
+        // Login correcto
+        usuarioActual = u;
+        const nombreMostrar = userRow[0].trim(); // nombre con capitalización original
+        document.getElementById('view-login').classList.add('hidden');
+        document.getElementById('view-dashboard').classList.remove('hidden');
+        document.getElementById('student-display').innerText = "¡Hola, " + nombreMostrar + "! ✨";
+
+        const diasRacha = actualizarRacha();
+        if (diasRacha > 1) {
+            document.getElementById('student-display').innerHTML += `<br><span style="font-size:0.9rem; color:#F59E0B;">🔥 ¡Llevas ${diasRacha} días seguidos estudiando!</span>`;
         }
+
+        // 2. Cargar contenido en paralelo
+        items = { flashcards: {}, readings: [], videos: [], reto: null };
+        const [retos, flashcards, lecturas, videos] = await Promise.all([
+            cargarHoja(GIDS.reto),
+            cargarHoja(GIDS.flashcard),
+            cargarHoja(GIDS.lectura),
+            cargarHoja(GIDS.video)
+        ]);
+
+        // Reto (col A=titulo, col B=descripcion, col C=usuario — sin cabecera)
+        const retoFila = retos.find(r => usuarioCoincide(r[2], u));
+        if (retoFila) items.reto = { t: retoFila[0], desc: retoFila[1] };
+
+        // Flashcards (col A=pregunta, col B=respuesta, col C=mazo, col D=usuario)
+        flashcards.filter(r => usuarioCoincide(r[3], u)).forEach(r => {
+            const mazoNombre = r[2] || "Sin mazo";
+            if (!items.flashcards[mazoNombre]) items.flashcards[mazoNombre] = [];
+            items.flashcards[mazoNombre].push({ q: r[0], a: r[1] });
+        });
+
+        // Lecturas (col A=titulo, col B=url, col C=usuario)
+        lecturas.filter(r => usuarioCoincide(r[2], u)).forEach(r => {
+            items.readings.push({ t: r[0], l: r[1] });
+        });
+
+        // Videos (col A=titulo, col B=url, col C=usuario)
+        videos.filter(r => usuarioCoincide(r[2], u)).forEach(r => {
+            items.videos.push({ t: r[0], l: r[1] });
+        });
+
+        render();
+        cargarExtras(u);
     }
 
     function render() {
+        // Reto
         const conReto = document.getElementById('container-reto');
         if (items.reto) {
             conReto.classList.remove('hidden');
@@ -239,15 +278,30 @@
         } else {
             conReto.classList.add('hidden');
         }
-        const fCon = document.getElementById('content-flashcards'); fCon.innerHTML = "";
-        Object.keys(items.flashcards).forEach(cat => {
-            fCon.innerHTML += `<div class="resource-row"><span style="font-weight:600; font-size:0.95rem; color:var(--primary)">${cat}</span><div><button class="btn-small btn-repasar" onclick="startStudy('${cat}', false)">🎴 Ver</button><button class="btn-small btn-test" onclick="startStudy('${cat}', true)">✍️ Test</button></div></div>`;
-        });
-        document.getElementById('content-lecturas').innerHTML = items.readings.map(l => `<div class="resource-row"><div><h4 style="margin:0; font-size:0.9rem;">${l.t}</h4><span style="font-size:0.7rem; color:#64748B;">${l.c}</span></div><button class="btn-small btn-repasar" onclick="window.open('${l.l}')">📖 Leer</button></div>`).join('') || "No hay lecturas disponibles.";
-        document.getElementById('content-videos').innerHTML = items.videos.map(v => {
-            const id = v.l.split('v=')[1]?.split('&')[0] || v.l.split('/').pop();
-            return `<div style="margin-bottom:25px;text-align:left"><h4 style="font-size:0.9rem; margin-bottom:8px;">🎥 ${v.t}</h4><div class="video-wrapper"><iframe src="https://www.youtube.com/embed/${id}"></iframe></div></div>`;
-        }).join('') || "No hay vídeos disponibles.";
+
+        // Flashcards
+        const fCon = document.getElementById('content-flashcards');
+        fCon.innerHTML = "";
+        if (Object.keys(items.flashcards).length === 0) {
+            fCon.innerHTML = '<p style="color:#94A3B8; font-size:0.85rem;">No hay mazos disponibles aún.</p>';
+        } else {
+            Object.keys(items.flashcards).forEach(cat => {
+                fCon.innerHTML += `<div class="resource-row"><span style="font-weight:600; font-size:0.95rem; color:var(--primary)">${cat}</span><div><button class="btn-small btn-repasar" onclick="startStudy('${cat}', false)">🎴 Ver</button><button class="btn-small btn-test" onclick="startStudy('${cat}', true)">✍️ Test</button></div></div>`;
+            });
+        }
+
+        // Lecturas
+        document.getElementById('content-lecturas').innerHTML = items.readings.length
+            ? items.readings.map(l => `<div class="resource-row"><div><h4 style="margin:0; font-size:0.9rem;">${l.t}</h4></div><button class="btn-small btn-repasar" onclick="window.open('${l.l}')">📖 Leer</button></div>`).join('')
+            : '<p style="color:#94A3B8; font-size:0.85rem;">No hay lecturas disponibles aún.</p>';
+
+        // Videos
+        document.getElementById('content-videos').innerHTML = items.videos.length
+            ? items.videos.map(v => {
+                const id = v.l.split('v=')[1]?.split('&')[0] || v.l.split('/').pop();
+                return `<div style="margin-bottom:25px;text-align:left"><h4 style="font-size:0.9rem; margin-bottom:8px;">🎥 ${v.t}</h4><div class="video-wrapper"><iframe src="https://www.youtube.com/embed/${id}"></iframe></div></div>`;
+              }).join('')
+            : '<p style="color:#94A3B8; font-size:0.85rem;">No hay vídeos disponibles aún.</p>';
     }
 
     function switchTab(id, el) {
@@ -264,16 +318,10 @@
         document.getElementById('view-dashboard').classList.add('hidden');
         document.getElementById('view-study').classList.remove('hidden');
         document.getElementById('study-topic').innerText = cat + (modoTest ? " • Modo Test" : " • Modo Repaso");
-
         const esVerbo = cat.toLowerCase().includes("verbo");
         if (modoTest) {
-            if (esVerbo) {
-                document.getElementById('writing-area').classList.remove('hidden');
-                document.getElementById('quiz-options').classList.add('hidden');
-            } else {
-                document.getElementById('writing-area').classList.add('hidden');
-                document.getElementById('quiz-options').classList.remove('hidden');
-            }
+            document.getElementById('writing-area').classList.toggle('hidden', !esVerbo);
+            document.getElementById('quiz-options').classList.toggle('hidden', esVerbo);
         } else {
             document.getElementById('writing-area').classList.add('hidden');
             document.getElementById('quiz-options').classList.add('hidden');
@@ -281,52 +329,40 @@
         updateCard();
     }
 
-function updateCard() {
-    const qEl = document.getElementById('flash-q');
-    const aEl = document.getElementById('flash-a');
-    const optsEl = document.getElementById('quiz-options');
-    
-    qEl.innerText = mazo[idx].q;
-    aEl.innerText = mazo[idx].a;
-    aEl.style.display = "none";
-    if (optsEl) optsEl.innerHTML = ""; 
-    
-    document.getElementById('write-feedback').innerText = "";
-    document.getElementById('write-input').value = "";
-    document.getElementById('study-progress').innerText = `TARJETA ${idx + 1} de ${mazo.length}`;
-
-    const esVerbo = document.getElementById('study-topic').innerText.toLowerCase().includes("verbo");
-    
-    if (modoTest && !esVerbo && optsEl) {
-        let opciones = [mazo[idx].a];
-        let otras = mazo.filter(m => m.a !== mazo[idx].a).map(m => m.a);
-        otras.sort(() => 0.5 - Math.random());
-        opciones = opciones.concat(otras.slice(0, 3)).sort(() => 0.5 - Math.random());
-
-        opciones.forEach(opt => {
-            const btn = document.createElement('button');
-            btn.className = "btn-primary"; 
-            btn.style.margin = "5px 0"; 
-            btn.innerText = opt;
-            btn.onclick = () => {
-                if (opt === mazo[idx].a) {
-                    puntos += 10;
-                    document.getElementById('puntos-valor').innerText = puntos;
-                    actualizarNivel();
-                    moveCard(1);
-                } else {
-                    alert("¡Error! La respuesta correcta era: " + mazo[idx].a);
-                    moveCard(1);
-                }
-            };
-            optsEl.appendChild(btn);
-        });
+    function updateCard() {
+        const qEl = document.getElementById('flash-q');
+        const aEl = document.getElementById('flash-a');
+        const optsEl = document.getElementById('quiz-options');
+        qEl.innerText = mazo[idx].q;
+        aEl.innerText = mazo[idx].a;
+        aEl.style.display = "none";
+        if (optsEl) optsEl.innerHTML = "";
+        document.getElementById('write-feedback').innerText = "";
+        document.getElementById('write-input').value = "";
+        document.getElementById('study-progress').innerText = `TARJETA ${idx + 1} de ${mazo.length}`;
+        const esVerbo = document.getElementById('study-topic').innerText.toLowerCase().includes("verbo");
+        if (modoTest && !esVerbo && optsEl) {
+            let opciones = [mazo[idx].a];
+            let otras = mazo.filter(m => m.a !== mazo[idx].a).map(m => m.a);
+            otras.sort(() => 0.5 - Math.random());
+            opciones = opciones.concat(otras.slice(0, 3)).sort(() => 0.5 - Math.random());
+            opciones.forEach(opt => {
+                const btn = document.createElement('button');
+                btn.className = "btn-primary";
+                btn.style.margin = "5px 0";
+                btn.innerText = opt;
+                btn.onclick = () => {
+                    if (opt === mazo[idx].a) { puntos += 10; document.getElementById('puntos-valor').innerText = puntos; actualizarNivel(); moveCard(1); }
+                    else { alert("¡Error! La respuesta correcta era: " + mazo[idx].a); moveCard(1); }
+                };
+                optsEl.appendChild(btn);
+            });
+        }
     }
-}
 
-    function showAnswer() { 
+    function showAnswer() {
         if (!modoTest || (modoTest && !document.getElementById('study-topic').innerText.toLowerCase().includes("verbo"))) {
-            document.getElementById('flash-a').style.display = "block"; 
+            document.getElementById('flash-a').style.display = "block";
         }
     }
 
@@ -335,15 +371,11 @@ function updateCard() {
         const correct = mazo[idx].a.toLowerCase();
         const feed = document.getElementById('write-feedback');
         if (val === correct) {
-            feed.innerText = "¡Correcto! +10 pts ✨"; 
-            feed.style.color = "#10B981";
-            puntos += 10;
-            document.getElementById('puntos-valor').innerText = puntos;
-            actualizarNivel();
+            feed.innerText = "¡Correcto! +10 pts ✨"; feed.style.color = "#10B981";
+            puntos += 10; document.getElementById('puntos-valor').innerText = puntos; actualizarNivel();
             setTimeout(() => moveCard(1), 1000);
         } else {
-            feed.innerText = "Ups! Era: " + mazo[idx].a; 
-            feed.style.color = "#EF4444";
+            feed.innerText = "Ups! Era: " + mazo[idx].a; feed.style.color = "#EF4444";
         }
     }
 
@@ -356,92 +388,75 @@ function updateCard() {
         document.getElementById('nivel-texto').innerText = nivel;
     }
 
-function moveCard(d) {
-    idx += d;
-    if (idx >= mazo.length) {
-        alert("¡Mazo completado! Has hecho un gran trabajo. ✨");
-        exitStudy();
-        return;
-    }
-    if (idx < 0) idx = 0;
-    updateCard();
-}
-    function exitStudy() { document.getElementById('view-study').classList.add('hidden'); document.getElementById('view-dashboard').classList.remove('hidden'); }
-    function usuarioCoincide(campo, userLogueado) {
-        if (!campo) return false;
-        return campo.split(',').map(u => u.trim().toLowerCase()).includes(userLogueado);
+    function moveCard(d) {
+        idx += d;
+        if (idx >= mazo.length) { alert("¡Mazo completado! Has hecho un gran trabajo. ✨"); exitStudy(); return; }
+        if (idx < 0) idx = 0;
+        updateCard();
     }
 
-async function cargarExtras(userLogueado) {
-    const baseURL = "https://docs.google.com/spreadsheets/d/e/2PACX-1vThhYdCFgB1S2jQEhtXtyTaDh4NfNPa8XSkvPkIAvtr2No8Z1z3TYcCjxSqDT3kdnOSa2JMmnU8FP_1/pub?output=csv&single=true&gid=";
-    const urlRedes    = baseURL + "594674464";
-    const urlEsquemas = baseURL + "1983367458";
+    function exitStudy() {
+        document.getElementById('view-study').classList.add('hidden');
+        document.getElementById('view-dashboard').classList.remove('hidden');
+    }
 
-    // Cargar Redes
-    Papa.parse(urlRedes, {
-        download: true,
-        header: true,
-        complete: function(results) {
-            const container = document.getElementById('social-buttons-container');
-            if (!container) return;
-            container.innerHTML = "";
-            const datosFiltrados = results.data.filter(r => usuarioCoincide(r.Usuario, userLogueado));
-            if (datosFiltrados.length === 0) {
-                container.innerHTML = '<p style="color:#94A3B8; font-size:0.85rem;">No hay redes disponibles aún.</p>';
-                return;
-            }
-            datosFiltrados.forEach(red => {
-                if (red.Nombre && red.URL) {
-                    const btn = document.createElement('a');
-                    btn.href = red.URL;
-                    btn.target = "_blank";
-                    btn.rel = "noopener noreferrer";
-                    btn.className = "btn-primary";
-                    btn.style.cssText = "margin-bottom:10px; display:block; text-decoration:none; text-align:center;";
-                    btn.innerText = `🔗 ${red.Nombre}`;
-                    container.appendChild(btn);
-                }
-            });
-        },
-        error: function() {
-            const container = document.getElementById('social-buttons-container');
-            if (container) container.innerHTML = '<p style="color:#EF4444; font-size:0.85rem;">Error al cargar las redes.</p>';
-        }
-    });
+    function reproducirAudio() {
+        window.speechSynthesis.cancel();
+        const msg = new SpeechSynthesisUtterance(mazo[idx].q);
+        const voces = window.speechSynthesis.getVoices();
+        const vozPreferida = voces.find(v => (v.name.includes('Female') || v.name.includes('Google') || v.name.includes('Zira')) && v.lang.includes('en'));
+        if (vozPreferida) msg.voice = vozPreferida;
+        msg.lang = 'en-US'; msg.pitch = 1.1; msg.rate = 0.9;
+        window.speechSynthesis.speak(msg);
+    }
 
-    // Cargar Esquemas
-    Papa.parse(urlEsquemas, {
-        download: true,
-        header: true,
-        complete: function(results) {
-            const gallery = document.getElementById('grammar-gallery');
-            if (!gallery) return;
-            gallery.innerHTML = "";
-            const esquemasFiltrados = results.data.filter(e => usuarioCoincide(e.Usuario, userLogueado));
-            if (esquemasFiltrados.length === 0) {
-                gallery.innerHTML = '<p style="color:#94A3B8; font-size:0.85rem;">No hay esquemas disponibles aún.</p>';
-                return;
-            }
-            esquemasFiltrados.forEach(esquema => {
-                const imgURL = esquema.URL_Image || esquema.URL_Imagen || "";
-                if (imgURL) {
-                    const imgBox = document.createElement('div');
-                    imgBox.className = 'esquema-card';
-                    imgBox.onclick = () => openLightbox(imgURL);
-                    imgBox.innerHTML = `
-                        <img src="${imgURL}" alt="${esquema.Titulo || 'Esquema'}" onerror="this.style.display='none'">
-                        <p>${esquema.Titulo || 'Esquema'}</p>
-                    `;
-                    gallery.appendChild(imgBox);
-                }
-            });
-        },
-        error: function() {
-            const gallery = document.getElementById('grammar-gallery');
-            if (gallery) gallery.innerHTML = '<p style="color:#EF4444; font-size:0.85rem;">Error al cargar los esquemas.</p>';
-        }
-    });
-}
+    async function cargarExtras(userLogueado) {
+        // Redes
+        Papa.parse(BASE + GIDS.redes, {
+            download: true, header: true,
+            complete: function(results) {
+                const container = document.getElementById('social-buttons-container');
+                if (!container) return;
+                container.innerHTML = "";
+                const datos = results.data.filter(r => usuarioCoincide(r.Usuario, userLogueado));
+                if (datos.length === 0) { container.innerHTML = '<p style="color:#94A3B8; font-size:0.85rem;">No hay redes disponibles aún.</p>'; return; }
+                datos.forEach(red => {
+                    if (red.Nombre && red.URL) {
+                        const btn = document.createElement('a');
+                        btn.href = red.URL; btn.target = "_blank"; btn.rel = "noopener noreferrer";
+                        btn.className = "btn-primary";
+                        btn.style.cssText = "margin-bottom:10px; display:block; text-decoration:none; text-align:center;";
+                        btn.innerText = `🔗 ${red.Nombre}`;
+                        container.appendChild(btn);
+                    }
+                });
+            },
+            error: () => { document.getElementById('social-buttons-container').innerHTML = '<p style="color:#EF4444;">Error al cargar las redes.</p>'; }
+        });
+
+        // Esquemas
+        Papa.parse(BASE + GIDS.esquemas, {
+            download: true, header: true,
+            complete: function(results) {
+                const gallery = document.getElementById('grammar-gallery');
+                if (!gallery) return;
+                gallery.innerHTML = "";
+                const datos = results.data.filter(e => usuarioCoincide(e.Usuario, userLogueado));
+                if (datos.length === 0) { gallery.innerHTML = '<p style="color:#94A3B8; font-size:0.85rem;">No hay esquemas disponibles aún.</p>'; return; }
+                datos.forEach(esquema => {
+                    const imgURL = esquema.URL_Image || esquema.URL_Imagen || "";
+                    if (imgURL) {
+                        const imgBox = document.createElement('div');
+                        imgBox.className = 'esquema-card';
+                        imgBox.onclick = () => openLightbox(imgURL);
+                        imgBox.innerHTML = `<img src="${imgURL}" alt="${esquema.Titulo || 'Esquema'}" onerror="this.style.display='none'"><p>${esquema.Titulo || 'Esquema'}</p>`;
+                        gallery.appendChild(imgBox);
+                    }
+                });
+            },
+            error: () => { document.getElementById('grammar-gallery').innerHTML = '<p style="color:#EF4444;">Error al cargar los esquemas.</p>'; }
+        });
+    }
 
     function openLightbox(url) {
         document.getElementById('lightbox-img').src = url;
