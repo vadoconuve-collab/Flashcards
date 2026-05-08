@@ -204,7 +204,7 @@
     function handleLogin() {
         const u = document.getElementById('user-name').value.trim().toLowerCase();
         const p = document.getElementById('user-pass').value.trim();
-        const rows = db.filter(r => r[3]?.toLowerCase() === u && r[4] === p);
+        const rows = db.filter(r => usuarioCoincide(r[3], u) && r[4] === p);
         if (rows.length) {
             document.getElementById('view-login').classList.add('hidden');
             document.getElementById('view-dashboard').classList.remove('hidden');
@@ -367,6 +367,11 @@ function moveCard(d) {
     updateCard();
 }
     function exitStudy() { document.getElementById('view-study').classList.add('hidden'); document.getElementById('view-dashboard').classList.remove('hidden'); }
+    function usuarioCoincide(campo, userLogueado) {
+        if (!campo) return false;
+        return campo.split(',').map(u => u.trim().toLowerCase()).includes(userLogueado);
+    }
+
 async function cargarExtras(userLogueado) {
     const baseURL = "https://docs.google.com/spreadsheets/d/e/2PACX-1vThhYdCFgB1S2jQEhtXtyTaDh4NfNPa8XSkvPkIAvtr2No8Z1z3TYcCjxSqDT3kdnOSa2JMmnU8FP_1/pub?output=csv&single=true&gid=";
     const urlRedes    = baseURL + "594674464";
@@ -380,7 +385,7 @@ async function cargarExtras(userLogueado) {
             const container = document.getElementById('social-buttons-container');
             if (!container) return;
             container.innerHTML = "";
-            const datosFiltrados = results.data.filter(r => r.Usuario?.toLowerCase() === userLogueado);
+            const datosFiltrados = results.data.filter(r => usuarioCoincide(r.Usuario, userLogueado));
             if (datosFiltrados.length === 0) {
                 container.innerHTML = '<p style="color:#94A3B8; font-size:0.85rem;">No hay redes disponibles aún.</p>';
                 return;
@@ -412,7 +417,7 @@ async function cargarExtras(userLogueado) {
             const gallery = document.getElementById('grammar-gallery');
             if (!gallery) return;
             gallery.innerHTML = "";
-            const esquemasFiltrados = results.data.filter(e => e.Usuario?.toLowerCase() === userLogueado);
+            const esquemasFiltrados = results.data.filter(e => usuarioCoincide(e.Usuario, userLogueado));
             if (esquemasFiltrados.length === 0) {
                 gallery.innerHTML = '<p style="color:#94A3B8; font-size:0.85rem;">No hay esquemas disponibles aún.</p>';
                 return;
