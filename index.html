@@ -225,6 +225,7 @@
 
         // Login correcto
         usuarioActual = u;
+        puntos = parseInt(localStorage.getItem('puntos_' + u) || '0');
         const nombreMostrar = userRow[0].trim(); // nombre con capitalización original
         document.getElementById('view-login').classList.add('hidden');
         document.getElementById('view-dashboard').classList.remove('hidden');
@@ -265,6 +266,8 @@
             items.videos.push({ t: r[0], l: r[1] });
         });
 
+        document.getElementById('puntos-valor').innerText = puntos;
+        actualizarNivel();
         render();
         cargarExtras(u);
     }
@@ -352,7 +355,7 @@
                 btn.style.margin = "5px 0";
                 btn.innerText = opt;
                 btn.onclick = () => {
-                    if (opt === mazo[idx].a) { puntos += 10; document.getElementById('puntos-valor').innerText = puntos; actualizarNivel(); moveCard(1); }
+                    if (opt === mazo[idx].a) { puntos += 10; localStorage.setItem('puntos_' + usuarioActual, puntos); document.getElementById('puntos-valor').innerText = puntos; actualizarNivel(); moveCard(1); }
                     else { alert("¡Error! La respuesta correcta era: " + mazo[idx].a); moveCard(1); }
                 };
                 optsEl.appendChild(btn);
@@ -366,13 +369,17 @@
         }
     }
 
+    function soloLetras(str) {
+        return str.toLowerCase().replace(/[^a-záéíóúüñ]/g, '');
+    }
+
     function checkWriting() {
         const val = document.getElementById('write-input').value.trim().toLowerCase();
         const correct = mazo[idx].a.toLowerCase();
         const feed = document.getElementById('write-feedback');
-        if (val === correct) {
+        if (soloLetras(val) === soloLetras(correct)) {
             feed.innerText = "¡Correcto! +10 pts ✨"; feed.style.color = "#10B981";
-            puntos += 10; document.getElementById('puntos-valor').innerText = puntos; actualizarNivel();
+            puntos += 10; localStorage.setItem('puntos_' + usuarioActual, puntos); document.getElementById('puntos-valor').innerText = puntos; actualizarNivel();
             setTimeout(() => moveCard(1), 1000);
         } else {
             feed.innerText = "Ups! Era: " + mazo[idx].a; feed.style.color = "#EF4444";
