@@ -177,7 +177,7 @@
     };
 
     let items = { flashcards: {}, readings: [], videos: [], reto: null };
-    let mazo = [], idx = 0, modoTest = false, puntos = 0;
+    let mazo = [], idx = 0, modoTest = false, puntos = 0, idiomaMazo = 'en-US';
     let usuarioActual = "";
 
     // Carga CSV de una hoja por su GID y devuelve una promesa con los datos
@@ -251,9 +251,12 @@
 
         // Flashcards (col A=pregunta, col B=respuesta, col C=mazo, col D=usuario)
         flashcards.filter(r => usuarioCoincide(r[3], u)).forEach(r => {
-            const mazoNombre = r[2] || "Sin mazo";
+            const mazoRaw = r[2] || "Sin mazo";
+            const mazoLangMatch = mazoRaw.match(/\[([a-z]{2}(?:-[a-z]{2})?)\]/i);
+            const mazoLang = mazoLangMatch ? mazoLangMatch[1].toLowerCase() : 'en';
+            const mazoNombre = mazoRaw.replace(/\s*\[[a-z]{2}(?:-[a-z]{2})?\]/i, '').trim();
             if (!items.flashcards[mazoNombre]) items.flashcards[mazoNombre] = [];
-            items.flashcards[mazoNombre].push({ q: r[0], a: r[1] });
+            items.flashcards[mazoNombre].push({ q: r[0], a: r[1], lang: mazoLang });
         });
 
         // Lecturas (col A=titulo, col B=url, col C=usuario)
@@ -315,9 +318,22 @@
         if (el) el.classList.add('active');
     }
 
+    // Map 2-letter lang codes to BCP-47 locale codes for SpeechSynthesis
+    const LANG_MAP = {
+        en: 'en-US', 'en-gb': 'en-GB', 'en-us': 'en-US', 'en-au': 'en-AU',
+        es: 'es-ES', 'es-mx': 'es-MX', 'es-la': 'es-419',
+        fr: 'fr-FR', 'fr-ca': 'fr-CA',
+        de: 'de-DE', it: 'it-IT',
+        pt: 'pt-PT', 'pt-br': 'pt-BR',
+        nl: 'nl-NL', pl: 'pl-PL',
+        ru: 'ru-RU', zh: 'zh-CN', ja: 'ja-JP', ar: 'ar-SA'
+    };
+
     function startStudy(cat, isTest) {
         mazo = [...items.flashcards[cat]].sort(() => Math.random() - 0.5);
         idx = 0; modoTest = isTest;
+        const langCode = mazo[0]?.lang || 'en';
+        idiomaMazo = LANG_MAP[langCode] || 'en-US';
         document.getElementById('view-dashboard').classList.add('hidden');
         document.getElementById('view-study').classList.remove('hidden');
         document.getElementById('study-topic').innerText = cat + (modoTest ? " • Modo Test" : " • Modo Repaso");
@@ -411,9 +427,15 @@
         window.speechSynthesis.cancel();
         const msg = new SpeechSynthesisUtterance(mazo[idx].q);
         const voces = window.speechSynthesis.getVoices();
-        const vozPreferida = voces.find(v => (v.name.includes('Female') || v.name.includes('Google') || v.name.includes('Zira')) && v.lang.includes('en'));
+        const langBase = idiomaMazo.split('-')[0];
+        const vozPreferida = voces.find(v =>
+            v.lang.startsWith(langBase) &&
+            (v.name.includes('Google') || v.name.includes('Female') || v.name.includes('Natural'))
+        ) || voces.find(v => v.lang.startsWith(langBase));
         if (vozPreferida) msg.voice = vozPreferida;
-        msg.lang = 'en-US'; msg.pitch = 1.1; msg.rate = 0.9;
+        msg.lang = idiomaMazo;
+        msg.pitch = 1.1;
+        msg.rate = 0.9;
         window.speechSynthesis.speak(msg);
     }
 
